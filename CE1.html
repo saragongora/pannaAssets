@@ -16,7 +16,7 @@
     <header>
         <nav class="navbar">
             <ul class="navbar__list">
-                <li><button type="button" class="navbar__btn-menu" onclick="window.location.href = 'HomeDesk.html'"><img src="assets/btn_menu.svg" alt="botao menu"></button></li>
+                <li><button type="button" class="navbar__btn-menu" id="toggle-sidebar" aria-label="Mostrar ou ocultar menu lateral" aria-expanded="true"><img src="assets/btn_menu.svg" alt="botao menu"></button></li>
                 <li class="navbar__item"><img class="navbar__logo" id="navbar-logo" src="assets/logo_group.png"></li>
                 <li class="navbar__item" id="navbar-manage-equipment"> • Gestão interna</li>
             </ul>    
@@ -158,7 +158,7 @@
                                 <button type="button" class="register-form__upload-button" id="photo-upload">
                                     <img src="assets/icon_upload.png" alt="Anexar" width="18">
                                 </button>
-                                <input class="register-form__input-upload" type="text" id="equipment-warranty" placeholder="Anexar arquivo" readonly>
+                                <input class="register-form__input-upload" type="text" id="equipment-photo" placeholder="Anexar arquivo" readonly>
                             </div>
                         </div>
 
@@ -204,7 +204,7 @@
     <!-- BOTÕES FINAIS -->
     <div class="register-form__actions">
         <button type="button" class="button--cancel" onclick="window.location.href = 'HomeDesk.html'">Cancelar</button>
-        <button type="button" class="button--register-equip" onclick="window.location.href ='CE2.html'">Cadastrar equipamento</button>
+        <button type="button" class="button--register-equip" id="submit-equipment">Cadastrar equipamento</button>
     </div>
 
 </form>
@@ -212,5 +212,8 @@
 
     </main>
     </div>
+    <!-- JavaScript compartilhado: menu, armazenamento e cadastro. -->
+    <script src="equipamentos-iniciais.js"></script>
+    <script src="panna.js"></script>
 </body>
 </html>

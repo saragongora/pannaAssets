@@ -14,7 +14,7 @@
     <header>
        <nav class="navbar">
             <ul class="navbar__list">
-                <li><button type="button" class="navbar__btn-menu" onclick="window.location.href = 'HomeDesk.html'"><img src="assets/btn_menu.svg" alt="botao menu"></button></li>
+                <li><button type="button" class="navbar__btn-menu" id="toggle-sidebar" aria-label="Mostrar ou ocultar menu lateral" aria-expanded="true"><img src="assets/btn_menu.svg" alt="botao menu"></button></li>
                 <li class="navbar__item"><img class="navbar__logo" id="navbar-logo" src="assets/logo_group.png"></li>
                 <li class="navbar__item" id="navbar-manage-equipment"> • Gestão interna</li>
             </ul>    
@@ -42,5 +42,8 @@
 
         </main>
     </div>
+    <!-- JavaScript compartilhado: menu, armazenamento e cadastro. -->
+    <script src="equipamentos-iniciais.js"></script>
+    <script src="panna.js"></script>
 </body>
 </html>

@@ -745,3 +745,11 @@ font-weight: bolder;
    }
 
    
+/* PANNA: menu lateral recolhível. Mantém as medidas originais quando aberto. */
+body.sidebar-collapsed .sidebar { transform: translateX(-100%); }
+body.sidebar-collapsed .main-content { margin-left: 0; width: 100%; }
+.sidebar, .main-content { transition: transform .2s ease, margin-left .2s ease, width .2s ease; }
+@media (max-width: 650px) {
+  .main-content { padding: 16px; }
+  body.sidebar-collapsed .sidebar { pointer-events: none; }
+}
