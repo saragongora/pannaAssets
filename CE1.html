@@ -164,42 +164,12 @@
 
                     </section>
 
-    <!-- SEÇÃO 3: TÍTULO FORA DA GRADE -->
-    <h2 class="title-h2">Manutenção preventiva</h2>
-    <section class="register-form__section-three">
-        
-    <div class="form-group field-large">
-        <label class="title-h4" for="equipment-type-maintenance">TIPO DE MANUTENÇÃO</label>
-        <select class="register-form__input input_select form-select" id="equipment-type-maintenance">
-            <option value="">Selecione</option>
-        </select>
-        
-    </div>
-
-    <div class="form-group field-large">
-        <label class="title-h4" for="periodicity">PERIODICIDADE</label>
-        <select class="register-form__input input_select form-select" id="periodicity">
-            <option value="">Selecione</option>
-        </select>
-    </div>
-
-    <div class="form-group field-small">
-        <label class="title-h4" for="equipment-supply">INSUMO</label>
-        <input class="register-form__input" type="text" id="equipment-supply">
-    </div>
-
-    <div class="form-group field-large">
-        <label class="title-h4" for="early-warning">AVISO ANTECIPADO</label>
-        <select class="register-form__input input_select form-select" id="early-warning">
-            <option value="">Selecione</option>
-            <option value="day7">7 DIAS</option>
-            <option value="day15">15 DIAS</option>
-            <option value="day30">30 DIAS</option>
-        </select>
-    </div>
-
-    <button type="button" class="button--add">Adicionar</button>
-</section>
+    <!-- ETAPA 5: cada equipamento aceita várias preventivas, cada uma com vários insumos. -->
+    <section class="panna-planos-section" aria-labelledby="panna-planos-titulo">
+        <div class="panna-planos-heading"><div><h2 class="title-h2" id="panna-planos-titulo">Manutenções preventivas</h2><p>Cadastre quantas preventivas forem necessárias. Cada uma pode conter vários insumos.</p></div><button type="button" id="panna-adicionar-plano" class="panna-yellow-btn">+ Nova preventiva</button></div>
+        <div id="panna-lista-planos" class="panna-planos-lista"></div>
+        <p class="panna-planos-ajuda">As datas previstas são informadas manualmente; não são criados agendamentos automaticamente.</p>
+    </section>
 
     <!-- BOTÕES FINAIS -->
     <div class="register-form__actions">

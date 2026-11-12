@@ -77,6 +77,70 @@
         }
         el.value = valor || '';
     }
+    // ETAPA 5 — modelo: equipamento.planosPreventivos = [{id,tipo,periodicidade,dataPrevista,avisoAntecipado,insumos:[{nome,quantidade,unidade}]}].
+    // Migração em memória: cadastros antigos continuam legíveis, sem regravar o localStorage até salvar.
+    function planosDoEquipamento(e) {
+        if (Array.isArray(e.planosPreventivos)) return e.planosPreventivos;
+        if (!e.tipoManutencao && !e.periodicidade && !e.insumo && !e.proximaPreventiva) return [];
+        return [{id:'legado-'+e.codigo, tipo:e.tipoManutencao||'', periodicidade:e.periodicidade||'',
+            dataPrevista:e.proximaPreventiva||'', avisoAntecipado:e.avisoAntecipado||'',
+            insumos:e.insumo?[{nome:e.insumo,quantidade:1,unidade:'un'}]:[]}];
+    }
+    const criarIdPlano = () => 'prev-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2,8);
+    function iniciarEditorPreventivas(original) {
+        const lista = $('#panna-lista-planos');
+        if (!lista) return () => [];
+        let planos = structuredClone(planosDoEquipamento(original||{}));
+        const tipos = ['Troca de óleo','Troca de filtro','Revisão elétrica','Lubrificação','Inspeção','Outros'];
+        const periodos = ['Semanal','Mensal','Trimestral','Semestral','Anual'];
+        function seletor(opcoes,valor,classe) {
+            const select=document.createElement('select');select.className='register-form__input '+classe;
+            select.add(new Option('Selecione',''));
+            opcoes.forEach(v=>select.add(new Option(v,v)));
+            if(valor && !opcoes.includes(valor)) select.add(new Option(valor,valor));
+            select.value=valor||'';return select;
+        }
+        function campoPlano(rotulo,controle) {const label=document.createElement('label');label.className='panna-plano-campo';const titulo=document.createElement('span');titulo.textContent=rotulo;label.append(titulo,controle);return label;}
+        function render() {
+            lista.replaceChildren();
+            if(!planos.length){const p=document.createElement('p');p.className='panna-planos-vazio';p.textContent='Nenhuma preventiva cadastrada. Clique em “Nova preventiva” para adicionar.';lista.append(p);}
+            planos.forEach((plano,indice)=>{
+                const card=document.createElement('article');card.className='panna-plano-card';
+                const header=document.createElement('div');header.className='panna-plano-topo';
+                const titulo=document.createElement('h3');titulo.textContent='Preventiva '+(indice+1);
+                const remover=document.createElement('button');remover.type='button';remover.className='panna-outline-btn';remover.textContent='Remover preventiva';remover.onclick=()=>{planos.splice(indice,1);render();};header.append(titulo,remover);card.append(header);
+                const grid=document.createElement('div');grid.className='panna-plano-grid';
+                const tipo=seletor(tipos,plano.tipo,'');tipo.onchange=()=>plano.tipo=tipo.value;
+                const periodo=seletor(periodos,plano.periodicidade,'');periodo.onchange=()=>plano.periodicidade=periodo.value;
+                const data=document.createElement('input');data.type='date';data.className='register-form__input';data.value=normalizarDataISO(plano.dataPrevista);data.onchange=()=>plano.dataPrevista=data.value;
+                const aviso=seletor(['7 dias','15 dias','30 dias'],plano.avisoAntecipado==='day7'?'7 dias':plano.avisoAntecipado==='day15'?'15 dias':plano.avisoAntecipado==='day30'?'30 dias':plano.avisoAntecipado,'');aviso.onchange=()=>plano.avisoAntecipado=aviso.value;
+                grid.append(campoPlano('Tipo de manutenção',tipo),campoPlano('Periodicidade',periodo),campoPlano('Próxima data prevista',data),campoPlano('Aviso antecipado',aviso));card.append(grid);
+                const insumosTitulo=document.createElement('div');insumosTitulo.className='panna-plano-topo';const subtitulo=document.createElement('h4');subtitulo.textContent='Insumos necessários';const add=document.createElement('button');add.type='button';add.className='panna-outline-btn';add.textContent='+ Adicionar insumo';add.onclick=()=>{plano.insumos.push({nome:'',quantidade:1,unidade:'un'});render();};insumosTitulo.append(subtitulo,add);card.append(insumosTitulo);
+                plano.insumos.forEach((insumo,i)=>{
+                    const linha=document.createElement('div');linha.className='panna-insumo-linha';
+                    const nome=document.createElement('input');nome.className='register-form__input';nome.placeholder='Nome do insumo';nome.setAttribute('aria-label','Nome do insumo');nome.value=insumo.nome||'';nome.oninput=()=>insumo.nome=nome.value;
+                    const qtd=document.createElement('input');qtd.className='register-form__input';qtd.type='number';qtd.min='0.01';qtd.step='any';qtd.placeholder='Quantidade';qtd.setAttribute('aria-label','Quantidade');qtd.value=insumo.quantidade??1;qtd.oninput=()=>insumo.quantidade=qtd.value;
+                    const unidade=document.createElement('input');unidade.className='register-form__input';unidade.placeholder='Unidade (un, L, kg...)';unidade.setAttribute('aria-label','Unidade');unidade.value=insumo.unidade||'';unidade.oninput=()=>insumo.unidade=unidade.value;
+                    const excluir=document.createElement('button');excluir.type='button';excluir.className='panna-outline-btn';excluir.textContent='Remover';excluir.onclick=()=>{plano.insumos.splice(i,1);render();};linha.append(nome,qtd,unidade,excluir);card.append(linha);
+                });lista.append(card);
+            });
+        }
+        $('#panna-adicionar-plano').addEventListener('click',()=>{planos.push({id:criarIdPlano(),tipo:'',periodicidade:'',dataPrevista:'',avisoAntecipado:'',insumos:[]});render();});
+        render();
+        return () => {
+            for(let i=0;i<planos.length;i++) {
+                const p=planos[i];
+                if(!p.tipo||!p.periodicidade||!p.dataPrevista) {alert('Preencha tipo, periodicidade e data prevista da preventiva '+(i+1)+'.');return null;}
+                for(const insumo of p.insumos) if(!insumo.nome.trim()||!(Number(insumo.quantidade)>0)||!insumo.unidade.trim()){alert('Preencha nome, quantidade maior que zero e unidade dos insumos da preventiva '+(i+1)+'.');return null;}
+            }
+            return structuredClone(planos);
+        };
+    }
+    function normalizarDataISO(data) {
+        if(/^\d{4}-\d{2}-\d{2}$/.test(data||''))return data;
+        if(/^\d{2}\/\d{2}\/\d{4}$/.test(data||'')){const [d,m,a]=data.split('/');return a+'-'+m+'-'+d;}
+        return '';
+    }
     // Cadastra um equipamento sem alterar os campos e o visual do formulário existente.
     function iniciarCadastro() {
         const botao = $('#submit-equipment');
@@ -84,6 +148,7 @@
         const codigoEdicao = new URLSearchParams(location.search).get('editar');
         const original = codigoEdicao ? listarEquipamentos().find(e => e.codigo === codigoEdicao) : null;
         if (codigoEdicao && !original) { alert('Equipamento não encontrado para edição.'); location.href = 'GE1.html'; return; }
+        const lerPlanos = iniciarEditorPreventivas(original);
         if (original) {
             Object.entries(CAMPOS).forEach(([chave, id]) => selecionarValor(id, original[chave]));
             const titulo = $('.main-content > .title-h1');
@@ -100,6 +165,8 @@
             if (patrimonio && lista.some(e => e.patrimonio === patrimonio && e.codigo !== codigoEdicao)) {
                 alert('Já existe um equipamento com este patrimônio.'); return;
             }
+            const planos = lerPlanos();
+            if (planos === null) return;
             const codigo = original ? original.codigo : 'EQP-' + String(Date.now()).slice(-10);
             // Preserva informações de outras telas (histórico, situação, preventiva etc.) na edição.
             const equipamento = original ? {...original} : {
@@ -110,6 +177,10 @@
                 const valor = campo(id);
                 if (!['notaFiscal','garantia','foto'].includes(chave) || valor) equipamento[chave] = valor;
             });
+            equipamento.planosPreventivos = planos;
+            // Compatibilidade com telas antigas: a próxima data é a menor data cadastrada.
+            const proximas = planos.map(p=>normalizarDataISO(p.dataPrevista)).filter(Boolean).sort();
+            equipamento.proximaPreventiva = proximas[0] || '';
             if (original) {
                 equipamento.atualizadoEm = new Date().toISOString();
                 lista[lista.findIndex(e => e.codigo === codigoEdicao)] = equipamento;
@@ -307,27 +378,44 @@
                 ['Fim da garantia',pannaDataFormatada(pannaLerData(item.fimGarantia))],
                 ['Localização',item.localizacao],['Responsável',item.responsavel],
                 ['Observações técnicas',item.observacoes]
-            ]],
-            ['#panna-campos-manutencao', [
-                ['Tipo de manutenção',item.tipoManutencao],['Periodicidade',item.periodicidade],
-                ['Insumo',item.insumo],['Aviso antecipado',item.avisoAntecipado]
             ]]
         ];
         grupos.forEach(([seletor, campos]) => {
             const container = $(seletor);
             campos.forEach(([rotulo, valor]) => pannaAdicionarCampo(container, rotulo, valor));
         });
+        // ETAPA 5: detalhamento de N preventivas e seus N insumos, sem HTML interpolado.
+        const planos=planosDoEquipamento(item);
+        const area=$('#panna-campos-manutencao');
+        area.classList.add('panna-planos-detalhe');
+        area.replaceChildren();
+        if (!planos.length) {const p=document.createElement('p');p.textContent='Nenhuma preventiva cadastrada.';area.append(p);}
+        planos.forEach((plano,i)=>{
+            const card=document.createElement('article');card.className='panna-plano-resumo';
+            const h=document.createElement('h3');h.textContent=(i+1)+'. '+(plano.tipo||'Preventiva');card.append(h);
+            pannaAdicionarCampo(card,'Periodicidade',plano.periodicidade);
+            pannaAdicionarCampo(card,'Próxima data prevista',dataBR(plano.dataPrevista));
+            pannaAdicionarCampo(card,'Aviso antecipado',plano.avisoAntecipado);
+            const subt=document.createElement('strong');subt.textContent='Insumos';card.append(subt);
+            const ul=document.createElement('ul');
+            (plano.insumos||[]).forEach(insumo=>{const li=document.createElement('li');li.textContent=insumo.nome+' — '+insumo.quantidade+' '+(insumo.unidade||'');ul.append(li);});
+            if(!ul.children.length){const li=document.createElement('li');li.textContent='Nenhum insumo cadastrado';ul.append(li);}
+            card.append(ul);area.append(card);
+        });
+        const editarPlanos=document.createElement('a');editarPlanos.href='CE1.html?editar='+encodeURIComponent(item.codigo)+'#panna-planos-titulo';editarPlanos.className='panna-yellow-btn panna-planos-link';editarPlanos.textContent='+ Adicionar ou editar preventivas';area.append(editarPlanos);
         // Próxima preventiva: somente uma data cadastrada é exibida como agendada.
         // Nunca inventamos um agendamento a partir da periodicidade isolada.
-        const prevista = pannaLerData(item.proximaPreventiva);
+        const datas = planos.map(p=>({plano:p,data:pannaLerData(p.dataPrevista)})).filter(x=>x.data).sort((a,b)=>a.data-b.data);
+        const proxima = datas[0];
+        const prevista = proxima ? proxima.data : null;
         const hoje = new Date();
         hoje.setHours(0,0,0,0);
         const dias = prevista ? pannaDiasEntre(hoje, prevista) : null;
         $('#panna-dias-preventiva').textContent = dias === null ? '—' : Math.abs(dias);
         $('#panna-dias-unidade').textContent = dias === null ? 'sem previsão' : dias < 0 ? 'dias de atraso' : dias === 0 ? 'vence hoje' : 'dias restantes';
         $('#panna-data-preventiva').textContent = prevista ? 'Data prevista: ' + pannaDataFormatada(prevista) : 'Nenhuma preventiva agendada';
-        const periodo = pannaPeriodicidadeDias(item.periodicidade);
-        $('#panna-regra-preventiva').textContent = item.periodicidade ? 'Periodicidade: ' + item.periodicidade + (item.tipoManutencao ? ' · ' + item.tipoManutencao : '') : 'Periodicidade não informada';
+        const periodo = pannaPeriodicidadeDias(proxima?.plano.periodicidade);
+        $('#panna-regra-preventiva').textContent = proxima ? 'Periodicidade: ' + proxima.plano.periodicidade + ' · ' + proxima.plano.tipo + ' · ' + planos.length + ' preventiva(s)' : 'Nenhuma preventiva com data informada';
         const progresso = $('#panna-progresso-preventiva');
         // Barra indicativa baseada na periodicidade, quando informada; caso contrário, sem porcentagem fictícia.
         const porcentagem = dias === null || !periodo ? 0 : Math.max(0, Math.min(100, Math.round((periodo - dias) / periodo * 100)));
