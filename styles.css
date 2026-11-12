@@ -813,3 +813,18 @@ body.sidebar-collapsed .main-content { margin-left: 0; width: 100%; }
 .panna-eventos{border-left:2px solid #e7e7e7;padding:12px 0 12px 16px;color:#777;font-size:14px}
 @media(max-width:1000px){.panna-detail-layout{grid-template-columns:1fr}.panna-detail-aside{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}.panna-detail-aside .panna-detail-card{margin:0}}
 @media(max-width:680px){.panna-detail-aside{grid-template-columns:1fr}.panna-detail-layout .panna-detail-card{padding:18px}.panna-qr-image{width:110px;height:110px}}
+
+/* ETAPA 4 — Botões e confirmação da tela de detalhes (escopo restrito). */
+.panna-detail-actions button{font-family:inherit;cursor:pointer}
+.panna-detail-actions .panna-danger-btn{border-color:#bd3730;color:#bd3730;background:#fff}
+.panna-detail-actions .panna-danger-btn:hover{background:#fff1f0}
+.panna-detail-actions .panna-yellow-btn{background:#ffd600;border-color:#ffd600}
+.panna-confirm-dialog{border:1px solid #dedede;border-radius:15px;padding:26px;width:min(420px,calc(100% - 32px));box-sizing:border-box;box-shadow:0 18px 65px #0003;color:#242424}
+.panna-confirm-dialog::backdrop{background:#0008}
+.panna-confirm-dialog h2{font-size:21px;margin:0 0 12px}
+.panna-confirm-dialog p{font-size:14px;line-height:1.6;color:#555;margin:0 0 24px;overflow-wrap:anywhere}
+.panna-confirm-actions{display:flex;justify-content:flex-end;gap:10px;flex-wrap:wrap}
+.panna-confirm-actions button{cursor:pointer;font-family:inherit}
+.panna-danger-solid{background:#ba302a;border:1px solid #ba302a;color:#fff;border-radius:8px;padding:12px 17px;font-size:14px;font-weight:700}
+.panna-danger-solid:hover{background:#92231f}
+.panna-confirm-dialog button:focus-visible,.panna-detail-actions button:focus-visible{outline:3px solid #856b00;outline-offset:2px}

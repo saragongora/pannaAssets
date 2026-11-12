@@ -47,6 +47,9 @@
                     <p class="panna-detail-subtitle"><span id="panna-detalhe-codigo"></span> · <span id="panna-detalhe-local"></span></p>
                 </div>
                 <div class="panna-detail-actions">
+                    <!-- ETAPA 4: ações sobre o cadastro; confirmação antes de excluir. -->
+                    <button type="button" class="panna-outline-btn panna-danger-btn" id="panna-excluir">Excluir</button>
+                    <button type="button" class="panna-outline-btn" id="panna-alternar-status">Inativar</button>
                     <a class="panna-outline-btn" href="GE1.html">Voltar</a>
                     <a class="panna-yellow-btn" id="panna-editar" href="GE1.html">Editar</a>
                 </div>
@@ -91,6 +94,15 @@
                     </section>
                 </aside>
             </div>
+            <!-- ETAPA 4: modal acessível de confirmação; nenhuma exclusão acontece sem confirmar. -->
+            <dialog id="panna-confirmar-exclusao" class="panna-confirm-dialog" aria-labelledby="panna-confirmar-titulo" aria-describedby="panna-confirmar-texto">
+                <h2 id="panna-confirmar-titulo">Excluir equipamento?</h2>
+                <p id="panna-confirmar-texto">Esta ação é permanente e não poderá ser desfeita.</p>
+                <div class="panna-confirm-actions">
+                    <button type="button" class="panna-outline-btn" id="panna-cancelar-exclusao">Cancelar</button>
+                    <button type="button" class="panna-danger-solid" id="panna-confirmar-excluir">Excluir equipamento</button>
+                </div>
+            </dialog>
         </main>
     </div>
     <!-- JavaScript compartilhado: menu, armazenamento e cadastro. -->

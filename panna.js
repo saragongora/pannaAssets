@@ -248,6 +248,56 @@
         situacao.classList.add(({'Em funcionamento':'panna-status-ok','Em manutenção':'panna-status-warning',
             'Parado':'panna-status-danger','Inativo':'panna-status-muted'})[item.situacao] || 'panna-status-muted');
         $('#panna-editar').href = 'CE1.html?editar=' + encodeURIComponent(item.codigo);
+        // ETAPA 4 — ações de situação e exclusão do equipamento.
+        // A situação anterior é guardada para que reativar não transforme
+        // indevidamente um equipamento em manutenção em "Em funcionamento".
+        const alternar = $('#panna-alternar-status');
+        const excluir = $('#panna-excluir');
+        const dialogo = $('#panna-confirmar-exclusao');
+        const atualizarBotaoSituacao = () => {
+            const inativo = item.situacao === 'Inativo';
+            alternar.textContent = inativo ? 'Reativar' : 'Inativar';
+            alternar.classList.toggle('panna-yellow-btn', inativo);
+            alternar.classList.toggle('panna-outline-btn', !inativo);
+            alternar.setAttribute('aria-label', (inativo ? 'Reativar' : 'Inativar') + ' ' + (item.nome || 'equipamento'));
+        };
+        atualizarBotaoSituacao();
+        alternar.addEventListener('click', () => {
+            const lista = listarEquipamentos();
+            const indice = lista.findIndex(e => e.codigo === item.codigo);
+            if (indice < 0) { alert('Este equipamento não existe mais.'); location.href = 'GE1.html'; return; }
+            const atual = lista[indice];
+            const inativo = atual.situacao === 'Inativo';
+            if (inativo) {
+                atual.situacao = atual.situacaoAntesInativacao || 'Em funcionamento';
+                delete atual.situacaoAntesInativacao;
+            } else {
+                atual.situacaoAntesInativacao = atual.situacao || 'Em funcionamento';
+                atual.situacao = 'Inativo';
+            }
+            atual.atualizadoEm = new Date().toISOString();
+            try { salvarEquipamentos(lista); }
+            catch (erro) { alert('Não foi possível alterar a situação.'); return; }
+            // Recarrega os dados e o indicador da preventiva, preservando a URL.
+            location.reload();
+        });
+        excluir.addEventListener('click', () => {
+            $('#panna-confirmar-texto').textContent =
+                'Excluir definitivamente "' + (item.nome || 'Equipamento') + '" (' + item.codigo + ')? Esta ação não pode ser desfeita.';
+            dialogo.showModal();
+        });
+        $('#panna-cancelar-exclusao').addEventListener('click', () => dialogo.close());
+        // Clique fora do conteúdo também cancela; a tecla Esc é nativa do dialog.
+        dialogo.addEventListener('click', evento => { if (evento.target === dialogo) dialogo.close(); });
+        $('#panna-confirmar-excluir').addEventListener('click', () => {
+            const lista = listarEquipamentos();
+            const restante = lista.filter(e => e.codigo !== item.codigo);
+            if (restante.length === lista.length) { dialogo.close(); alert('Equipamento já excluído.'); location.href = 'GE1.html'; return; }
+            try { salvarEquipamentos(restante); }
+            catch (erro) { alert('Não foi possível excluir o equipamento.'); return; }
+            // Retorna à listagem, que recalcula contadores e filtros.
+            location.href = 'GE1.html';
+        });
         const grupos = [
             ['#panna-campos-equipamento', [
                 ['Nome',item.nome],['Marca',item.marca],['Modelo',item.modelo],
