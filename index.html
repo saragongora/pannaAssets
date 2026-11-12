@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Panna Equipamentos</title>
+  <link rel="icon" href="assets/logo_group.png" type="image/png">
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"
+    integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r"
+    crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.9/dist/js/bootstrap.min.js"
+    integrity="sha384-89aa4glufciPv46aKltztWQEmk+Tu9W2RhzXr6VcnUUEub7F8+06RcL2RYLCOHUq"
+    crossorigin="anonymous"></script>
+  <link rel="stylesheet" href="styles.css">
+  <script src="https://cloudflare.com" defer></script>
+</head>
+
+
+
+<body>
+  <main class="login">
+
+    <div class="login__card">
+      <img src="assets/logo.png" class="logo-panna" />
+      <h1 class="title-h1" id="login-title">Bem-vindo de volta!</h1>
+      <h3 class="title-h3">Faça login para acessar o sistema.</h3>
+
+      <div class="login__field">
+        <label for="username" class="login__label">Usuário</label>
+        <div class="login__username">
+          <img src="assets/icon_user.svg" alt="icone usuário" class="icon__user">
+          <input class="login__input" type="text" id="username" placeholder="Digite seu Usuário">
+        </div>
+      </div>
+
+      <div class="login__field">
+        <label for="password" class="login__label">Senha</label>
+        <div class="login__password">
+          <img src="assets/icon_lock.svg" alt="icone senha" class="icon__user">
+          <input class="login__input login__input--password" type="password" id="password"
+            placeholder="Digite sua senha">
+          <button type="button" class="login__toggle" id="password-toggle" aria-label="Mostrar ou ocultar senha">
+            <img src="assets/btn_eye.svg" alt="Mostrar Senha" width="24">
+          </button>
+        </div>
+      </div>
+
+      <!--
+        <div class="login__options">    
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="remember">
+                <label class="form-check-label login__remember" for="remember">Lembrar de mim</label>            
+            </div>
+
+            <a href="#" class="login__forgot">Esqueceu a senha?</a>
+    quando criar a tela de recuperação de senha, vai linkar nesse href que por enquando está vazio, sem link
+        </div>-->
+
+      <button type="button" class="login__enter" onclick="window.location.href = 'HomeDesk.html'">Entrar</button>
+
+      <div class="login__divider">
+        <span>ou</span>
+      </div>
+      <button type="button" class="login__exit" onclick="window.location.href = '#'">Sair do sistema</button>
+
+
+    </div>
+
+    <div class="art-login">
+      <img src="assets/login-art.png" alt="arte login" />
+    </div>
+  </main>
+</body>
+
+</html>

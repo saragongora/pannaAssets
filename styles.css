@@ -1,0 +1,747 @@
+/* ------------- 1. RESET GLOBAL & FONTES -------------- */
+* { /* RESET GLOBAL & CONFIGURAÇÕES BASE */
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box; /* Impede que bordas e paddings quebrem os 40% e 60% de largura */
+  font-family: inherit; /* FORÇA inputs e botões a herdarem a fonte do body automaticamente! */
+}
+
+@font-face { /* IMPORTAÇÃO DA FONTE EXTERNA */
+  font-family: 'ARCHIVO';
+  src: url('assets/font/Archivo.ttf') format('truetype'); 
+}
+
+body {
+  width: 100%;
+  min-height: 100dvh;
+  background-color: #F3F3F1;
+  font-family: 'ARCHIVO', sans-serif;
+}
+
+/* ------------- 2. TIPOGRAFIA GLOBAL & TEXTOS -------------- */
+.title-h1 {
+  font-size: 1.31rem; /* Equivalente aos 21px do Figma (21÷16) */
+  font-weight: bolder;
+  color: #1A1A1A;
+  margin-bottom: 4px;
+}
+
+.title-h2 {
+  font-size: 1rem; /* Equivalente aos 16px do Figma (16÷16) */
+  font-weight: bolder;
+  color: #1A1A1A;
+  margin: 28px 0 16px 0; 
+}
+
+.title-h3 {
+  font-size: 0.75rem; /* Equivalente aos 12px do Figma (12÷16) */
+  font-weight: 400;
+  color: #77737B;
+  margin-bottom: 32px; /* Afasta o bloco de títulos do primeiro input */
+}
+
+.title-h4 {
+  font-size: 0.68rem; /* Equivalente aos 11px do Figma (11÷16) */
+  font-weight: bolder;
+  letter-spacing: 0.5px;
+  color: #5A585E;
+  margin-bottom: 6px;
+}
+
+p {
+  font-size: 0.75rem; /* Equivalente aos 12px do Figma (12÷16) */
+  color: #77737B;
+  margin: 10px 25px;
+}
+
+/* ------------- 3. TELA DE LOGIN (SPLIT SCREEN) -------------- */
+.login {
+  width: 100vw;
+  min-height: 100dvh;
+  display: flex !important; /* O !important garante que o Bootstrap não anule o Flexbox */
+  flex-direction: row !important; /* Força um do lado do outro obrigatoriamente */
+}
+
+.login__card { /* CARD DA ESQUERDA (FORMULÁRIO DE LOGIN) */
+  width: 597px; /* 477px dos inputs + 120px de padding laterais */
+  min-height: 100dvh;
+  padding: 60px;
+  background-color: #FFFFFF;
+  display: flex;
+  flex-direction: column;
+  justify-content: center; /* Centraliza o formulário verticalmente */
+  flex-shrink: 0; /* Impede o navegador de achatar o formulário */
+}
+
+.logo-panna {
+  width: 180px;
+  margin-top: 20px;
+  margin-bottom: 60px;
+}
+
+/* Campos de entrada (Inputs do Login) */
+.login__field {
+  margin-bottom: 24px; /* Espaçamento entre os blocos de input */
+  display: flex;
+  flex-direction: column;
+}
+
+.login__label {
+  font-size: 0.93rem; /* Equivalente aos 15px do Figma (15÷16) */
+  font-weight: 600;
+  color: #37333F;
+}
+
+/* Containers relativos para os ícones funcionarem por cima do input */
+.login__username,
+.login__password {
+  position: relative;
+  display: flex;
+  align-items: center; /* Centraliza o ícone e o input verticalmente */
+  width: 100%; 
+}
+
+/* Ajuste fino dos ícones (Sem margin-top que quebra o alinhamento) */
+.icon__user {
+  width: 17px;
+  height: 17px;
+  position: absolute;
+  left: 14px; /* Afastamento da borda esquerda do input */
+  pointer-events: none; /* Permite clicar no input mesmo se clicar em cima do ícone */
+}
+
+.login__input { /* Customização dos inputs para remover o estilo padrão feio */
+  width: 477px;
+  height: 41px;
+  padding-left: 42px; /* Espaço para o texto começar após o ícone da esquerda */
+  padding-right: 16px;
+  border: 1px solid #D5D3D7;
+  border-radius: 8px;
+  font-size: 0.68rem; /* Equivalente aos 11px do Figma (11÷16) */
+  outline: none;
+}
+
+.login__input--password { /* Padding à direita para o texto não ficar sob o olho */
+  padding-right: 44px;
+}
+
+.login__toggle {
+  position: absolute;
+  right: 14px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.login__enter {
+  margin-top: 20px;
+}
+
+.login__enter, .login__exit { /* Botão Entrar Amarelo */
+  width: 467px;
+  height: 41px;
+  background-color: #FFBF12; /* Amarelo institucional da PANNA */
+  color: #1A1A1A;
+  border: 1px solid #E9AF00;
+  border-radius: 8px;
+  font-size: 0.93rem; /* Equivalente aos 15px do Figma (15÷16) */
+  font-weight: 700;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.login__exit {
+  background-color: #FFFFFF;
+  border: 1px solid #AD77FF;
+}
+
+.login__divider {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    width: 100%;
+    margin: 16px 0;
+    color: #8C8C8C;
+    font-size: 13px;
+}
+
+.login__divider::before,
+.login__divider::after {
+    content: "";
+    flex: 1;
+    height: 1px;
+    background-color: #E5E5E3;
+}
+
+.login__submit:hover {
+  background-color: #EAB308; /* Tom mais escuro no hover */
+}
+
+/* Imagem de Arte da Direita */
+.art-login {
+  flex: 1;
+  height: 100dvh; /* Força o container a ter a altura exata da tela */
+  overflow: hidden; /* Impede que qualquer sobra da imagem crie barras de rolagem */
+}
+
+.art-login img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* Substitui o background-size e elimina a borda branca */
+  display: block; /* Remove um espaço em branco fantasma que navegadores colocam sob imagens */
+}
+
+/* ------------- 4. NAVEGAÇÃO SUPERIOR (NAVBAR) -------------- */
+.navbar {
+  position: fixed !important; /* Trava a barra amarela no topo da tela */
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1030;
+  width: 100%;
+  height: 66px;
+  background-color: #FFD500;
+}
+
+.navbar__list {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: center;
+  list-style: none;
+  padding: 5px;
+}
+
+.navbar__list li {
+  padding: 0 5px;
+}
+
+.navbar__btn-menu { /* Limpa o fundo e as bordas padrão */
+  background: transparent !important; /* Força o fundo a ficar invisível */
+  border: none !important;            /* Remove qualquer borda nativa ou do Bootstrap */
+  box-shadow: none !important;        /* Remove sombras ou contornos ao clicar */
+}
+
+#navbar-manage-equipment {
+  margin-left: auto;
+  padding: 0 25px;
+}
+
+/* ------------- 5. ESTRUTURA DO PAINEL INTERNO (LAYOUT + SIDEBAR) -------------- */
+.layout-container {
+  display: block;
+  width: 100%;
+  padding-top: 66px; /* Empurra o conteúdo para baixo da navbar fixa */
+}
+
+.sidebar {
+  position: fixed !important; /* Trava o menu lateral na janela do navegador */
+  top: 66px; /* Começa logo abaixo da navbar amarela */
+  left: 0;
+  bottom: 0; /* Estica obrigatoriamente até o chão da tela */
+  width: 242px;
+  z-index: 1020;
+  display: flex !important;
+  flex-direction: column;
+  justify-content: space-between; /* Joga o menu para o topo e o perfil para o último pixel do fundo */
+  background-color: #FFFFFF;
+  border-right: 1px solid #E5E5E3;
+}
+
+.sidebar ul {
+  list-style: none;
+  font-size: 0.81rem;
+  padding: 6px;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.sidebar__buttons {
+  width: 100%;
+  padding: 0;
+}
+
+/* ESTADO NORMAL: Trava o tamanho, alinha à esquerda e separa o ícone do texto */
+.sidebar__buttons button {
+  width: 100%;
+  height: 46px;
+  padding: 0 16px;
+  border-radius: 9px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start; /* Trava o conteúdo na esquerda */
+  gap: 7px;                    /* Separa o ícone da escrita */
+  white-space: nowrap;         /* Impede o texto de quebrar linha no hover */
+  
+  background-color: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  color: #343431;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+/* ESTADO ATIVO E HOVER: Muda apenas o fundo e o peso da fonte, sem mover nada */
+.sidebar__buttons--active button, 
+.sidebar__buttons button:hover {
+  background-color: #FFD500 !important;
+  font-weight: 700;
+}
+
+.footer_sidebar {
+  width: 100%;
+  padding: 16px;
+  background-color: #FFFFFF;
+  display: flex;
+  align-items: center;
+}
+
+/* ------------- 6. ÁREA PRINCIPAL & FORMULÁRIOS INTERNOS (MAIN) -------------- */
+.main-content {
+  margin-left: 242px; /* Abre espaço exato para a sidebar fixa não cobrir o formulário */
+  width: calc(100% - 242px); /* Garante que o conteúdo ocupe exatamente o espaço restante da tela */
+  min-height: calc(100vh - 66px);
+  background-color: #F3F3F1;
+  padding: 32px;
+}
+
+.form-card {
+  background-color: #FFFFFF;
+  border: 1px solid #E5E5E3;
+  border-radius: 16px;
+  padding: 32px 40px;
+}
+
+/* Remove a margem superior apenas do primeiro título do card */
+.register-form > .title-h2:first-child {
+  margin-top: 0;
+}
+
+/* Faz cada caixinha empilhar a label em cima do input */
+.form-group {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.register-form__input, .equipment-table__header-allsituation {
+  width: 100%; /* Garante que o campo preencha toda a largura da coluna */
+  height: 42px;
+  border-radius: 8px;
+  padding: 0 14px;
+  font-size: 0.81rem; /* Equivalente aos 13px do Figma para melhor leitura ao digitar */
+  color: #343431;
+  background-color: #FFFFFF;
+  border: 1px solid #D5D3D7;
+  outline: none;
+}
+
+/* Estilo cinza claro para selects e campos de anexo */
+.input_select {
+  background-color: #F4F4F2 !important;
+  border: 1px solid #E2E2DF !important;
+}
+
+/* Seções 1 e 2: Grade de 3 colunas */
+.register-form__section-one, 
+.register-form__section-two {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px 20px;
+}
+
+/* Estilização unificada dos campos de anexo */
+.register-form__upload {
+  display: flex;
+  align-items: center;
+  height: 42px;
+  background-color: #F4F4F2;
+  border: 1px solid #E2E2DF;
+  border-radius: 8px;
+  padding: 0 12px;
+  gap: 8px;
+}
+
+.register-form__upload-button {
+  background: transparent;
+  border: none;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+.register-form__input-upload {
+  border: none;
+  background: transparent;
+  width: 100%;
+  font-size: 0.81rem;
+  color: #77737B;
+  outline: none;
+}
+
+/* Seção 3: Manutenção Preventiva */
+.register-form__section-three {
+  display: flex;
+  align-items: flex-end; /* Alinha o botão "Adicionar" pela base dos inputs */
+  gap: 16px;
+}
+
+.field-large {
+  flex: 2; /* Campos maiores dividem o espaço proporcionalmente */
+}
+
+.field-small {
+  width: 110px; /* Campo Insumo menor, igual ao Figma */
+  flex-shrink: 0;
+}
+
+/* ------------- 7. BOTÕES DE AÇÃO DO FORMULÁRIO -------------- */
+.button--add {
+  height: 42px;
+  padding: 0 20px;
+  background-color: #FFFFFF;
+  border: 1.5px solid #1A1A1A;
+  border-radius: 8px;
+  font-size: 0.81rem;
+  font-weight: 700;
+  color: #1A1A1A;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+.register-form__actions {
+display: flex;
+justify-content: flex-end;
+gap: 12px;
+margin-top: 36px;
+}
+.button--cancel, .button--register-equip, .button--manage-equip {
+height: 42px;
+border-radius: 8px;
+font-size: 0.81rem; /* Equivalente aos 13px do Figma */
+font-weight: bolder;
+cursor: pointer;
+}
+.button--cancel {
+padding: 0 24px;
+background-color: #FFFFFF;
+border: 1.5px solid #1A1A1A;
+color: #1A1A1A;
+}
+.button--register-equip, .button--manage-equip {
+padding: 0 24px;
+background-color: #FFD500; /* Amarelo institucional da PANNA */
+border: 1px solid #E2BC00;
+color: #1A1A1A;
+}
+
+.form-card--qrcode {
+  width: 650px;
+  background-color: #FFFFFF;
+  border: 1px solid #E5E5E3;
+  border-radius: 16px;
+  padding: 10px 40px;
+}
+
+.buttons {
+    width: 150px;
+    padding: 5px;    
+    background-color: #FFFFFF;
+    border: 1.5px solid #1A1A1A;
+    border-radius: 8px;
+    color: #1A1A1A;
+    width: 100px;
+    height: 48px;
+    cursor: pointer;
+}
+
+.register-form__finish {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 32px;
+    margin: 40px 0;
+}
+
+.register-form__qr-code {
+    width: 210px;
+    height: 210px;
+}
+
+.register-form__export-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    flex: 1;
+}
+
+.export-item {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    width: 100%;
+    height: 52px;
+    padding: 0 20px;
+    background-color: #FFFFFF;
+    border: 1px solid #E2E2DF;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.export-item:hover {
+  background-color: #F8F8F7;
+}
+
+.action-btn { /*botoes da finalização do cadastro*/
+  font-size: 15px;
+  font-weight: 500;
+  color: #1A1A1A;
+}
+
+
+.export-item__icon--plus
+{
+  display: flex;
+  margin-left: 60px;
+}
+
+/* Garante que o ícone e o texto fiquem lado a lado e centralizados dentro do botão */
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  white-space: nowrap; /* Impede o texto de quebrar em duas linhas */
+}
+
+.button__icon {
+  width: 18px;
+  height: 18px;
+}
+
+
+.register-form__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+
+.title-inform{
+  width: fit-content;
+  margin: 20px 0;
+  color: #226C3E;
+  font-weight: bolder;
+  background-color: #DCEFDC;
+  border: none;
+  border-radius: 20px;
+  padding: 10px 20px;
+}
+
+.button--manage-equip{
+  display: flex;
+  gap: 12px;
+  
+}
+
+.manage-header{
+  display: flex;
+  justify-content: space-between; /*empurra os textos para a esquerda e o botão totalmente para a direita*/
+  align-items:center; /*alinha o botão verticalmente no meio da altura dos textos*/
+}
+
+.title-h3--ge {
+  font-size: 0.75rem; /* Equivalente aos 12px do Figma (12÷16) */
+  font-weight: 400;
+  color: #77737B;
+  padding: 10px 0 0;
+  text-decoration: none;
+}
+
+.equipment-summary{
+  display: grid;
+  grid-template-columns: repeat(4,1fr); /*colocando os cards em 4 colunas*/
+  gap: 20px;
+  margin-top: 32px;
+}
+
+.equipment-summary__card{
+  padding: 20px 24px;
+  background-color: #FFFFFF;
+  border: 1px solid #E5E5E3 ;
+  border-radius: 14px;
+}
+
+.equipment-summary__card--active{
+ border: 1.5px solid #F5C400;
+}
+
+.title-h1--ge {
+  font-size: 1.31rem; /* Equivalente aos 21px do Figma (21÷16) */
+  font-weight: bolder;
+  color: #1A1A1A;
+  padding: 0x;
+  margin: 7px 0;
+ 
+}
+
+.equipment-table{
+  background-color: #FFFFFF;
+  border: 1px solid #E5E5E3;
+  border-radius: 16px;
+  padding: 24px 32px;
+  margin-top: 24px;
+}
+
+.equipment-table__header--filters {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+
+.equipment-table__header--search {
+  width: 260px;
+  display: flex;
+  align-items: center;
+  height: 42px;
+  background-color: #F4F4F2;
+  border: 1px solid #E2E2DF;
+  border-radius: 8px;
+  padding: 0 12px;
+  gap: 12px;
+}
+
+.equipment-table__header{
+display: flex;
+justify-content: space-between;
+align-items: center;
+margin-bottom: 24px;
+}
+
+
+.equipment-table__search-btn{
+  background-color: transparent;
+  border: none;
+}
+
+.equipment-table__search-input{
+  border: none;
+  background-color: transparent;
+  outline: none;
+  width: 100%;
+}
+
+.equipment-table__header-allsituation {
+  width: 190px;
+}
+
+.equipament-table__buttons{
+  display: flex;
+  justify-content: flex-end;
+  gap: 25px;
+  background-color: transparent;
+  border: none;
+}
+
+.equipment-table__grid{
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 16px 0; /* border-spacing: define o espaçamento entre as colunas e linhas da tabela (só funciona com border-collapse: separate) */
+
+}
+
+th{
+  font-size: 1rem; /* Equivalente aos 16px do Figma (16÷16) */
+  text-align: left;
+  color: #8C8C8C ;
+  padding: 18px 16x;
+  border-bottom: 1px solid #E5E5E3;
+}
+
+td{
+  padding: 18px 16px;
+  vertical-align: middle; /* vertical-align: middle; centraliza o conteúdo verticalmente no meio da altura da célula */
+  border-bottom: 1px solid #F0F0EE;
+
+}
+
+.status-badge{
+display: inline-flex;
+align-items: center;
+gap: 6px;
+padding: 4px 12px;
+border-radius: 20px;
+font-size: 0.75rem; /* Equivalente aos 12px do Figma (12÷16) */
+font-weight: bolder;
+}
+
+.functioning{
+  background-color:#DCEFDC;
+  color:#226C3E ;
+}
+
+.maintenance{
+  background-color: #FEF3C7;
+  color: #B45309;
+}
+.stopped{
+  background-color: #FEE2E2;
+  color: #B91C1C;
+}
+
+.inactive{
+  background-color: #F3F4F6;
+  color: #4B5563;
+}
+
+.equipament-table__edit, .equipament-table__enable-disable,
+ .equipament-table__delete{
+  background-color: transparent;
+  border: none;  
+}
+
+ .equipment-table__several{
+  color: #77737B;
+ }
+
+  .equipment-table__date{
+    margin: 0;
+  }
+
+  .equipment-table__name, .equipment-table__date{
+    font-weight: bolder;
+
+  }
+
+   .equipment-table__status-color-maroon{
+    color: #B45309;
+    margin: 0;
+  }
+   
+
+   .equipment-table__status-color-red{
+    color: #B91C1C;
+    margin: 0;
+  }
+   
+
+   .equipment-table__status-color-green{
+    color: #226C3E;
+    margin: 0;
+   }
+
+   .equipment-table__status-color-gray{
+    color: #4B5563;
+    margin: 0;
+   }
+
+   

@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panna Equipamentos</title>
+    <link rel="icon" href="assets/logo_group.png" type="image/png">
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.9/dist/js/bootstrap.min.js" integrity="sha384-89aa4glufciPv46aKltztWQEmk+Tu9W2RhzXr6VcnUUEub7F8+06RcL2RYLCOHUq" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cloudflare.com" defer></script>
+</head>
+
+
+<body class="page page--home">
+    <header>
+        <nav class="navbar">
+            <ul class="navbar__list">
+                <li><button type="button" class="navbar__btn-menu" onclick="window.location.href = 'HomeDesk.html'"><img src="assets/btn_menu.svg" alt="botao menu"></button></li>
+                <li class="navbar__item"><img class="navbar__logo" id="navbar-logo" src="assets/logo_group.png"></li>
+                <li class="navbar__item" id="navbar-manage-equipment"> • Gestão interna</li>
+            </ul>    
+        </nav>
+    </header>
+
+    <div class="layout-container">
+        <div class="sidebar" id="side-menu">
+            <ul>
+                <li class="sidebar__buttons sidebar__buttons--active"><button type="button" class="navbar__btn-menu" onclick="window.location.href ='CE1.html'"><img src="assets/icon_file.svg" alt="botao menu">Cadastrar Equipamentos</button></li>
+                <li class="sidebar__buttons"><button type="button" class="navbar__btn-menu" onclick="window.location.href ='GE1.html'"><img src="assets/icon_box.svg" alt="botao menu">Gerenciar Equipamentos</button></li>
+                <li class="sidebar__buttons"><button type="button" class="navbar__btn-menu" onclick="window.location.href ='#'"><img src="assets/icon_truck.svg" alt="botao menu">Transferir</button></li>
+                <li class="sidebar__buttons"><button type="button" class="navbar__btn-menu" onclick="window.location.href ='#'"><img src="assets/icon_maintenance.png" alt="botao menu" style="width: 20px; height: 20px;">Manutenção</button></li>
+                <li class="sidebar__buttons"><button type="button" class="navbar__btn-menu" onclick="window.location.href ='#'"><img src="assets/icon_report.png" alt="botao menu" style="width: 20px; height: 20px;">Relatórios</button></li>
+            </ul>
+
+            <footer class="footer_sidebar">
+                <button type="button" class="navbar__btn-menu" onclick="window.location.href = 'index.html'"><img src="assets/logo_profile.svg" alt="botao menu"></button>
+            </footer>
+        </div>
+
+        <main class="main-content">
+            <h1 class="title-h1">Cadastrar equipamento</h1>
+            <h3 class="title-h3">Preencha os dados em uma única tela. Os campos de manutenção definem os alertas automáticos.</h3>
+
+            <div class="form-card">
+                <form class="register-form">
+                    <h2 class="title-h2">Informações do equipamento</h2>
+                    <section class="register-form__section-one">
+                        <div class="form-group">
+                            <label class="title-h4" for="equipment-name">NOME DO EQUIPAMENTO</label>
+                            <input class="register-form__input" type="text" id="equipment-name">
+                        </div>
+
+                        <div class="form-group">
+                            <label class="title-h4" for="equipment-brand">MARCA</label>
+                            <input class="register-form__input" type="text" id="equipment-brand">
+                        </div>
+
+                        <div class="form-group">
+                            <label class="title-h4" for="equipment-model">MODELO</label>
+                            <input class="register-form__input" type="text" id="equipment-model">
+                        </div>
+
+                        <div class="form-group">
+                            <label class="title-h4" for="equipment-num-serial">NÚMERO DE SÉRIE</label>
+                            <input class="register-form__input" type="text" id="equipment-num-serial">
+                        </div>
+
+                        <div class="form-group">
+                            <label class="title-h4" for="equipment-heritage">PATRIMÔNIO</label>
+                            <input class="register-form__input" type="text" id="equipment-heritage">
+                        </div>
+
+                        <div class="form-group">
+                            <label class="title-h4" for="equipment-group-equip">GRUPO DE EQUIPAMENTOS</label>
+                            <select class="register-form__input input_select form-select" id="equipment-group-equip">
+                                <option value="">Selecione</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="title-h4" for="equipment-voltage">VOLTAGEM</label>
+                            <select class="register-form__input input_select form-select" id="equipment-voltage">
+                                <option value="">Selecione</option>
+                                <option value="127V">127 V</option>
+                                <option value="220V">220 V</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="title-h4" for="equipment-power">POTÊNCIA (W)</label>
+                            <input class="register-form__input" type="text" id="equipment-power">
+                        </div>
+
+                        <div class="form-group">
+                            <label class="title-h4" for="equipment-supplier">FORNECEDOR</label>
+                            <input class="register-form__input" type="text" id="equipment-supplier">
+                        </div>
+
+                        <div class="form-group">
+                            <label class="title-h4" for="equipment-cost-acquis">VALOR DA AQUISIÇÃO</label>
+                            <input class="register-form__input" type="text" id="equipment-cost-acquis">
+                        </div>
+
+                        <div class="form-group">
+                            <label class="title-h4" for="equipment-date-acquis">DATA DA AQUISIÇÃO</label>
+                            <input class="register-form__input" type="date" id="equipment-date-acquis">
+                        </div>
+
+                        <div class="form-group">
+                            <label class="title-h4" for="equipment-warranty-end">DATA FINAL DA GARANTIA</label>
+                            <input class="register-form__input" type="date" id="equipment-warranty-end">
+                        </div>
+                    </section>
+
+                    <h2 class="title-h2">Localização e documentos</h2>
+                    <section class="register-form__section-two">
+                        <div class="form-group">
+                            <label class="title-h4" for="equipment-location">LOCALIZAÇÃO</label>
+                            <select class="register-form__input input_select form-select" id="equipment-location">
+                                <option value="">Selecione</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="title-h4" for="equipment-answerable">RESPONSÁVEL</label>
+                            <input class="register-form__input" type="text" id="equipment-answerable">
+                        </div>
+
+                        <div class="form-group">
+                            <label class="title-h4" for="equipment-techinical-notes">OBSERVAÇÕES TÉCNICAS</label>
+                            <input class="register-form__input" type="text" id="equipment-techinical-notes" placeholder="Capacidade, peso, acessórios">
+                        </div>
+
+                        <div class="form-group">
+                            <label class="title-h4">NOTAS FISCAIS</label>
+                            <div class="register-form__upload">
+                                <button type="button" class="register-form__upload-button" id="invoice-upload">
+                                    <img src="assets/icon_upload.png" alt="Anexar" width="18">
+                                </button>
+                                <input class="register-form__input-upload" type="text" id="equipment-invoice" placeholder="Anexar arquivo" readonly>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="title-h4">GARANTIA</label>
+                            <div class="register-form__upload">
+                                <button type="button" class="register-form__upload-button" id="warranty-upload">
+                                    <img src="assets/icon_upload.png" alt="Anexar" width="18">
+                                </button>
+                                <input class="register-form__input-upload" type="text" id="equipment-warranty" placeholder="Anexar arquivo" readonly>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="title-h4">FOTO DO EQUIPAMENTO</label>
+                            <div class="register-form__upload">
+                                <button type="button" class="register-form__upload-button" id="photo-upload">
+                                    <img src="assets/icon_upload.png" alt="Anexar" width="18">
+                                </button>
+                                <input class="register-form__input-upload" type="text" id="equipment-warranty" placeholder="Anexar arquivo" readonly>
+                            </div>
+                        </div>
+
+                    </section>
+
+    <!-- SEÇÃO 3: TÍTULO FORA DA GRADE -->
+    <h2 class="title-h2">Manutenção preventiva</h2>
+    <section class="register-form__section-three">
+        
+    <div class="form-group field-large">
+        <label class="title-h4" for="equipment-type-maintenance">TIPO DE MANUTENÇÃO</label>
+        <select class="register-form__input input_select form-select" id="equipment-type-maintenance">
+            <option value="">Selecione</option>
+        </select>
+        
+    </div>
+
+    <div class="form-group field-large">
+        <label class="title-h4" for="periodicity">PERIODICIDADE</label>
+        <select class="register-form__input input_select form-select" id="periodicity">
+            <option value="">Selecione</option>
+        </select>
+    </div>
+
+    <div class="form-group field-small">
+        <label class="title-h4" for="equipment-supply">INSUMO</label>
+        <input class="register-form__input" type="text" id="equipment-supply">
+    </div>
+
+    <div class="form-group field-large">
+        <label class="title-h4" for="early-warning">AVISO ANTECIPADO</label>
+        <select class="register-form__input input_select form-select" id="early-warning">
+            <option value="">Selecione</option>
+            <option value="day7">7 DIAS</option>
+            <option value="day15">15 DIAS</option>
+            <option value="day30">30 DIAS</option>
+        </select>
+    </div>
+
+    <button type="button" class="button--add">Adicionar</button>
+</section>
+
+    <!-- BOTÕES FINAIS -->
+    <div class="register-form__actions">
+        <button type="button" class="button--cancel" onclick="window.location.href = 'HomeDesk.html'">Cancelar</button>
+        <button type="button" class="button--register-equip" onclick="window.location.href ='CE2.html'">Cadastrar equipamento</button>
+    </div>
+
+</form>
+        </div>
+
+    </main>
+    </div>
+</body>
+</html>

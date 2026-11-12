@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panna Equipamentos</title>
+    <link rel="icon" href="assets/logo_group.png" type="image/png">
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.9/dist/js/bootstrap.min.js" integrity="sha384-89aa4glufciPv46aKltztWQEmk+Tu9W2RhzXr6VcnUUEub7F8+06RcL2RYLCOHUq" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cloudflare.com" defer></script>
+</head>
+
+
+<body class="page page--home">
+    <header>
+        <nav class="navbar">
+            <ul class="navbar__list">
+                <li><button type="button" class="navbar__btn-menu" onclick="window.location.href = 'HomeDesk.html'"><img src="assets/btn_menu.svg" alt="botao menu"></button></li>
+                <li class="navbar__item"><img class="navbar__logo" id="navbar-logo" src="assets/logo_group.png"></li>
+                <li class="navbar__item" id="navbar-manage-equipment"> • Gestão interna</li>
+            </ul>    
+        </nav>
+    </header>
+
+    <div class="layout-container">
+        <div class="sidebar" id="side-menu">
+            <ul>
+                <li class="sidebar__buttons"><button type="button" class="navbar__btn-menu" onclick="window.location.href ='CE1.html'"><img src="assets/icon_file.svg" alt="botao menu">Cadastrar Equipamentos</button></li>
+                <li class="sidebar__buttons sidebar__buttons--active"><button type="button" class="navbar__btn-menu" onclick="window.location.href ='GE1.html'"><img src="assets/icon_box.svg" alt="botao menu">Gerenciar Equipamentos</button></li>
+                <li class="sidebar__buttons"><button type="button" class="navbar__btn-menu" onclick="window.location.href ='#'"><img src="assets/icon_truck.svg" alt="botao menu">Transferir</button></li>
+                <li class="sidebar__buttons"><button type="button" class="navbar__btn-menu" onclick="window.location.href ='#'"><img src="assets/icon_maintenance.png" alt="botao menu" style="width: 20px; height: 20px;">Manutenção</button></li>
+                <li class="sidebar__buttons"><button type="button" class="navbar__btn-menu" onclick="window.location.href ='#'"><img src="assets/icon_report.png" alt="botao menu" style="width: 20px; height: 20px;">Relatórios</button></li>
+            </ul>
+
+            <footer class="footer_sidebar">
+                <button type="button" class="navbar__btn-menu" onclick="window.location.href = 'index.html'"><img src="assets/logo_profile.svg" alt="botao menu"></button>
+            </footer>
+        </div>
+
+        <main class="main-content">
+
+            <div class="manage-header">
+                <div>             
+                    <h3 class="title-h3" style="margin-bottom: 0;">OPERAÇÕES / EQUIPAMENTOS</h3>    
+                    <h1 class="title-h1" style="padding: 5px 0;">Gerenciamento de equipamentos</h1>
+                    <h3 class="title-h3" style="margin-bottom: 0;">Acompanhe o status, a localização e as preventivas dos equipamentos.</h3>
+                </div>
+            
+                <button type="button" class="button button--manage-equip" onclick="window.location.href ='CE1.html'">
+                <img src="assets/icon_plus.svg" alt="Ícone de +" class="button__icon" width="18">
+                <span>Cadastrar equipamento</span>
+                </button>
+            </div>
+
+          
+            <section class="equipment-summary">                              
+                    <div class="equipment-summary__card equipment-summary__card--active">
+                    <h3 class="title-h3--ge">Total de equipamentos</h3>
+                    <h1 class="title-h1--ge"> 48 </h1>
+                    <img src="assets/icon_status_green.svg" alt="Icone de status - verde"> <a class="title-h3--ge">Total cadastrado</a>
+                    </div>    
+                            
+                    <div class="equipment-summary__card">
+                    <h3 class="title-h3--ge">Em funcionamento</h3>
+                    <h1 class="title-h1--ge"> 31 </h1>
+                    <img src="assets/icon_status_green.svg" alt="Icone de status - verde"><a class="title-h3--ge" href="#"> Clique para filtrar</a>
+                    </div>    
+              
+                    <div class="equipment-summary__card">
+                    <h3 class="title-h3--ge">Em manutenção</h3>
+                    <h1 class="title-h1--ge"> 9 </h1>
+                    <img src="assets/icon_status_orange.svg" alt="Icone de status - laranja"> <a class="title-h3--ge" href="#"> Clique para filtrar</a>
+                    </div>    
+               
+                    <div class="equipment-summary__card">
+                    <h3 class="title-h3--ge">Parados e inativos</h3>
+                    <h1 class="title-h1--ge"> 8 </h1>
+                    <img src="assets/icon_status_red.svg" alt="Icone de status - vermelho"><a class="title-h3--ge" href="#"> Clique para filtrar</a>
+                    </div>
+            </section>
+
+            <section class="equipment-table">
+                <div class="equipment-table__header">
+                    <div class="equipment-table__title-group">
+                    <h1 class="title-h1--ge">Equipamentos</h1>
+                    <span class="title-h3--ge">6 registros encontrados</span>
+                    </div>
+
+                    <div class="equipment-table__header--filters">
+                        <div class="equipment-table__header--search">        
+                        <button type="button" class="equipment-table__search-btn" id="photo-upload">
+                                    <img src="assets/icon_search.svg" alt="Anexar" width="18">
+                                </button>
+                                <input class="equipment-table__search-input" type="text" id="equipment-search" placeholder="Buscar equipamento">
+                        </div>   
+                    
+                    
+                    
+                
+                    <div class="equipment-table__header--select">
+                                <select class="equipment-table__header-allsituation input_select form-select" id="all-situation">
+                                <option value="all-sit">Todas as situações</option>
+                                <option value="in-operation-sit">Em funcionamento</option>
+                                <option value="under-maintenance">Em manutenção</option>
+                                <option value="stopped-sit">Parado</option>
+                                <option value="inactive-sit">Inativo</option>    
+                            </select>
+                         </div>                                    
+                </div>
+                </div>
+
+                <table class="equipment-table__grid">
+                    <thead>
+                        <tr>
+                            <th>CÓDIGO</th>
+                            <th>EQUIPAMENTO</th>
+                            <th>GRUPO</th>
+                            <th>LOCAL</th>
+                            <th>VOLTAGEM</th>
+                            <th>PRÓXIMA PREVENTIVA</th>
+                            <th>SITUAÇÃO</th>
+                            <th></th>
+                        </tr>    
+                    </thead>
+
+                    <tbody>
+                        <tr class="equipment-table__tr">
+                            <td class="equipment-table__several">EQP-00185538</td>
+                            <td class="equipment-table__name">Aspirador de pó industrial</td>
+                            <td class="equipment-table__several">Aspiradores</td>
+                            <td class="equipment-table__several">Toyota Sorocaba</td>
+                            <td class="equipment-table__several">220V</td>
+                                
+                            <td>
+                                <div>
+                                    <p class="equipment-table__date">10/12/2026</p>
+                                    <p class="equipment-table__status-color-green">em 36 dias</p>
+                                </div>
+                            </td>    
+                            <td><span class="status-badge maintenance">• Em manutenção</span></td>
+                            <td>
+                                <div class="equipament-table__buttons">
+                                <button type="button" class="equipament-table__edit">
+                                    <img src="assets/icon_edit.svg" alt="Botão editar">
+                                </button>    
+                                 <button type="button" class="equipament-table__enable-disable">
+                                    <img src="assets/icon_enable_disable.png" alt="Botão ativar ou desativar" width="20"> 
+                                 </button>
+                                <button type="button" class="equipament-table__delete">
+                                    <img src="assets/icon_delete.svg" alt="Botão delete">     
+                                </button>
+                                </div>                        
+                            </td>
+                        </tr>
+
+                        <tr class="equipment-table__tr">
+                            <td class="equipment-table__several">EQP-00172204</td>
+                            <td class="equipment-table__name">Trator</td>
+                            <td class="equipment-table__several">Tratores</td>
+                            <td class="equipment-table__several">ZF Sorocaba</td>
+                            <td class="equipment-table__several">Diesel</td>
+                                <td>
+                                <div>
+                                    <p class="equipment-table__date">28/12/2026</p>
+                                    <p class="equipment-table__status-color-green">em 54 dias</p>
+                                </div>
+                                </td>
+
+                            <td><span class="status-badge functioning">• Em funcionamento</span></td>
+                            <td>
+                                 <div class="equipament-table__buttons">
+                                <button type="button" class="equipament-table__edit">
+                                    <img src="assets/icon_edit.svg" alt="Botão editar">
+                                </button>    
+                                 <button type="button" class="equipament-table__enable-disable">
+                                    <img src="assets/icon_enable_disable.png" alt="Botão ativar ou desativar" width="20"> 
+                                 </button>
+                                <button type="button" class="equipament-table__delete">
+                                    <img src="assets/icon_delete.svg" alt="Botão delete">     
+                                </button>
+                                </div>                         
+                            </td>
+                        </tr>
+
+                        <tr class="equipment-table__tr">
+                            <td class="equipment-table__several">EQP-00168821</td>
+                            <td class="equipment-table__name">Betoneira 400 L</td>
+                            <td class="equipment-table__several">Betoneiras</td>
+                            <td class="equipment-table__several">Clarios Sorocaba</td>
+                            <td class="equipment-table__several">220V</td>
+                                <td>
+                                <div>
+                                    <p class="equipment-table__date">23/10/2026</p>
+                                    <p class="equipment-table__status-color-red">atrasada 12 dias</p>
+                                </div>
+                                </td>
+
+                            <td><span class="status-badge stopped">• Parado</span></td>
+                            <td>
+                                 <div class="equipament-table__buttons">
+                                <button type="button" class="equipament-table__edit">
+                                    <img src="assets/icon_edit.svg" alt="Botão editar">
+                                </button>    
+                                 <button type="button" class="equipament-table__enable-disable">
+                                    <img src="assets/icon_enable_disable.png" alt="Botão ativar ou desativar" width="20"> 
+                                 </button>
+                                <button type="button" class="equipament-table__delete">
+                                    <img src="assets/icon_delete.svg" alt="Botão delete">     
+                                </button>
+                               </div>                          
+                            </td>
+                        </tr>
+
+                        <tr class="equipment-table__tr">
+                            <td class="equipment-table__several">EQP-00159033</td>
+                            <td class="equipment-table__name">Multicalibrador</td>
+                            <td class="equipment-table__several">Medição</td>
+                            <td class="equipment-table__several">Dana Sorocaba</td>
+                            <td class="equipment-table__several">Bivolt</td>
+                               <td>
+                                <div>
+                                    <p class="equipment-table__date">09/11/2026</p>
+                                    <p class="equipment-table__status-color-maroon">em 5 dias</p>
+                                </div>
+                                </td>
+
+                            <td><span class="status-badge functioning">• Em funcionamento</span></td>
+                            <td>
+                                 <div class="equipament-table__buttons">
+                                <button type="button" class="equipament-table__edit">
+                                    <img src="assets/icon_edit.svg" alt="Botão editar">
+                                </button>    
+                                 <button type="button" class="equipament-table__enable-disable">
+                                    <img src="assets/icon_enable_disable.png" alt="Botão ativar ou desativar" width="20"> 
+                                 </button>
+                                <button type="button" class="equipament-table__delete">
+                                    <img src="assets/icon_delete.svg" alt="Botão delete">     
+                                </button>
+                                </div>                       
+                            </td>
+                        </tr>
+
+                        <tr class="equipment-table__tr">
+                            <td class="equipment-table__several">EQP-00143377</td>
+                            <td class="equipment-table__name">Enceradeira</td>
+                            <td class="equipment-table__several">Enceradeiras</td>
+                            <td class="equipment-table__several">Emphasis Sorocaba</td>
+                            <td class="equipment-table__several">127V</td>
+                                <td>
+                                <div>
+                                    <p class="equipment-table__date">25/11/2026</p>
+                                    <p class="equipment-table__status-color-green">em 21 dias</p>
+                                </div>
+                                </td>
+                            <td><span class="status-badge functioning">• Em funcionamento</span></td>
+                            <td>
+                                 <div class="equipament-table__buttons">
+                                <button type="button" class="equipament-table__edit">
+                                    <img src="assets/icon_edit.svg" alt="Botão editar">
+                                </button>    
+                                 <button type="button" class="equipament-table__enable-disable">
+                                    <img src="assets/icon_enable_disable.png" alt="Botão ativar ou desativar" width="20"> 
+                                 </button>
+                                <button type="button" class="equipament-table__delete">
+                                    <img src="assets/icon_delete.svg" alt="Botão delete">     
+                                </button>
+                                </div>                         
+                            </td>
+                        </tr>
+
+                        <tr class="equipment-table__tr">
+                            <td class="equipment-table__several">EQP-00131250</td>
+                            <td class="equipment-table__name">Esmerilhadeira</td>
+                            <td class="equipment-table__several">Esmerilhadeiras</td>
+                            <td class="equipment-table__several">Dana Itu</td>
+                            <td class="equipment-table__several">220V</td>
+                                <td>
+                                <div>
+                                    <p class="equipment-table__date">-</p>
+                                    <p class="equipment-table__status-color-gray">equipamento inativo</p>
+                                </div>
+                                </td>
+
+                            <td><span class="status-badge inactive">• Inativo</span></td>
+                            <td>
+                                 <div class="equipament-table__buttons">
+                                <button type="button" class="equipament-table__edit">
+                                    <img src="assets/icon_edit.svg" alt="Botão editar">
+                                </button>    
+                                 <button type="button" class="equipament-table__enable-disable">
+                                    <img src="assets/icon_enable_disable.png" alt="Botão ativar ou desativar" width="20"> 
+                                 </button>
+                                <button type="button" class="equipament-table__delete">
+                                    <img src="assets/icon_delete.svg" alt="Botão delete">     
+                                </button>
+                                </div>                     
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </section>
+        </main>
+    </div>
+</body>
+</html>
