@@ -753,3 +753,63 @@ body.sidebar-collapsed .main-content { margin-left: 0; width: 100%; }
   .main-content { padding: 16px; }
   body.sidebar-collapsed .sidebar { pointer-events: none; }
 }
+
+/* PANNA ETAPA 2 — estilos exclusivos da tela GE2; estilos existentes preservados. */
+.panna-detail-top {display:flex;justify-content:space-between;align-items:center;gap:20px;flex-wrap:wrap;margin-bottom:18px}
+.panna-detail-actions {display:flex;gap:10px;flex-wrap:wrap}
+.panna-outline-btn,.panna-yellow-btn {display:inline-block;padding:12px 17px;border-radius:8px;text-decoration:none;font-size:14px;font-weight:700;color:#242424}
+.panna-outline-btn {border:1px solid #777;background:#fff}
+.panna-yellow-btn {background:#ffd600;border:1px solid #ffd600}
+.panna-detail-tabs {display:flex;gap:8px;flex-wrap:wrap;margin:16px 0}
+.panna-detail-tabs a {padding:10px 16px;border:1px solid #ddd;border-radius:7px;text-decoration:none;color:#333;background:#fff}
+.panna-detail-tabs .panna-tab-active {background:#ffd600;border-color:#ffd600}
+.panna-detail-status {margin:12px 0 18px;color:#555}
+.panna-detail-card {background:#fff;border:1px solid #e1e1e1;border-radius:12px;padding:22px;margin:0 0 16px;max-width:1100px}
+.panna-detail-card h2 {font-size:19px;margin:0 0 20px}
+.panna-detail-grid {display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:22px 18px}
+.panna-detail-field {min-width:0;overflow-wrap:anywhere}
+.panna-detail-field span {display:block;color:#777;font-size:11px;text-transform:uppercase;margin-bottom:6px}
+.panna-detail-field strong {font-size:14px;color:#222}
+.panna-clickable-row {cursor:pointer}
+.panna-clickable-row:hover {background:#fffbea}
+.panna-clickable-row:focus-visible {outline:2px solid #c9a600}
+@media(max-width:800px){.panna-detail-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:520px){.panna-detail-grid{grid-template-columns:1fr}.panna-detail-card{padding:16px}}
+
+/* ETAPA 3 — Detalhes: regras isoladas para não alterar as demais telas. */
+.panna-detail-top--new{align-items:flex-end;margin-bottom:22px}
+.panna-detail-eyebrow{font-size:11px;font-weight:800;letter-spacing:1.2px;color:#777;margin:0 0 7px}
+.panna-detail-subtitle{color:#777;font-size:14px;margin:5px 0 0}
+.panna-detail-layout{display:grid;grid-template-columns:minmax(0,2.25fr) minmax(260px,1fr);gap:20px;align-items:start;max-width:1440px}
+.panna-detail-main,.panna-detail-aside{min-width:0}
+.panna-detail-layout .panna-detail-card{max-width:none;margin-bottom:20px;border-radius:16px;padding:24px}
+.panna-card-heading{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:22px}
+.panna-card-heading h2{margin:0}
+.panna-detail-layout .panna-detail-grid{gap:24px 18px}
+.panna-detail-layout .panna-detail-field span{font-size:11px;font-weight:700;letter-spacing:.35px;color:#8a8a86}
+.panna-detail-layout .panna-detail-field strong{font-size:14px;line-height:1.45}
+.panna-detail-status{display:inline-flex;align-items:center;margin:0;border-radius:99px;padding:8px 14px;font-size:12px;font-weight:700;white-space:nowrap}
+.panna-status-ok,.panna-alerta-ok{background:#e6f4eb;color:#247044}
+.panna-status-warning,.panna-alerta-warning{background:#fff3de;color:#98600f}
+.panna-status-danger,.panna-alerta-danger{background:#fde9e7;color:#a72f28}
+.panna-status-muted,.panna-alerta-neutral{background:#f0f0f0;color:#666}
+.panna-detail-tabs{margin:0 0 20px}
+.panna-detail-tabs a{border-radius:10px;padding:11px 18px;font-weight:650}
+.panna-detail-layout .panna-detail-card h2{font-size:18px}
+.panna-preventiva-count{display:flex;align-items:baseline;gap:9px;margin:12px 0 3px}
+.panna-preventiva-count strong{font-size:42px;line-height:1.1;color:#1d1d1d}
+.panna-preventiva-count span{font-size:14px;color:#555}
+#panna-data-preventiva{font-size:13px;color:#666;margin:6px 0 15px}
+.panna-progress{height:9px;border-radius:30px;background:#e6e6e4;overflow:hidden}
+.panna-progress>div{height:100%;width:0;background:#27834c;border-radius:30px;transition:width .2s}
+.panna-preventiva-rule{font-size:12px;color:#666;line-height:1.6;margin:14px 0}
+.panna-preventiva-alerta{display:inline-block;font-size:12px;font-weight:700;padding:7px 12px;border-radius:99px;margin:0 0 16px}
+.panna-full-btn{display:block;text-align:center;width:100%;box-sizing:border-box}
+.panna-qr-content{display:flex;align-items:center;gap:16px}
+.panna-qr-image{width:128px;height:128px;object-fit:contain;flex-shrink:0}
+.panna-qr-info{min-width:0;overflow-wrap:anywhere;display:flex;flex-direction:column;gap:7px;font-size:13px}
+.panna-qr-info small{font-size:12px;color:#666}
+.panna-qr-note{font-size:11px;color:#999}
+.panna-eventos{border-left:2px solid #e7e7e7;padding:12px 0 12px 16px;color:#777;font-size:14px}
+@media(max-width:1000px){.panna-detail-layout{grid-template-columns:1fr}.panna-detail-aside{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}.panna-detail-aside .panna-detail-card{margin:0}}
+@media(max-width:680px){.panna-detail-aside{grid-template-columns:1fr}.panna-detail-layout .panna-detail-card{padding:18px}.panna-qr-image{width:110px;height:110px}}

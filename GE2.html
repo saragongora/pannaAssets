@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detalhes do equipamento | Panna Assets</title>
+    <link rel="icon" href="assets/logo_group.png" type="image/png">
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.9/dist/js/bootstrap.min.js" integrity="sha384-89aa4glufciPv46aKltztWQEmk+Tu9W2RhzXr6VcnUUEub7F8+06RcL2RYLCOHUq" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cloudflare.com" defer></script>
+</head>
+
+
+<body class="page page--home">
+    <header>
+        <nav class="navbar">
+            <ul class="navbar__list">
+                <li><button type="button" class="navbar__btn-menu" id="toggle-sidebar" aria-label="Mostrar ou ocultar menu lateral" aria-expanded="true"><img src="assets/btn_menu.svg" alt="botao menu"></button></li>
+                <li class="navbar__item"><img class="navbar__logo" id="navbar-logo" src="assets/logo_group.png"></li>
+                <li class="navbar__item" id="navbar-manage-equipment"> • Gestão interna</li>
+            </ul>    
+        </nav>
+    </header>
+
+    <div class="layout-container">
+        <div class="sidebar" id="side-menu">
+            <ul>
+                <li class="sidebar__buttons"><button type="button" class="navbar__btn-menu" onclick="window.location.href ='CE1.html'"><img src="assets/icon_file.svg" alt="botao menu">Cadastrar Equipamentos</button></li>
+                <li class="sidebar__buttons sidebar__buttons--active"><button type="button" class="navbar__btn-menu" onclick="window.location.href ='GE1.html'"><img src="assets/icon_box.svg" alt="botao menu">Gerenciar Equipamentos</button></li>
+                <li class="sidebar__buttons"><button type="button" class="navbar__btn-menu" onclick="window.location.href ='#'"><img src="assets/icon_truck.svg" alt="botao menu">Transferir</button></li>
+                <li class="sidebar__buttons"><button type="button" class="navbar__btn-menu" onclick="window.location.href ='#'"><img src="assets/icon_maintenance.png" alt="botao menu" style="width: 20px; height: 20px;">Manutenção</button></li>
+                <li class="sidebar__buttons"><button type="button" class="navbar__btn-menu" onclick="window.location.href ='#'"><img src="assets/icon_report.png" alt="botao menu" style="width: 20px; height: 20px;">Relatórios</button></li>
+            </ul>
+
+            <footer class="footer_sidebar">
+                <button type="button" class="navbar__btn-menu" onclick="window.location.href = 'index.html'"><img src="assets/logo_profile.svg" alt="botao menu"></button>
+            </footer>
+        </div>
+
+        <main class="main-content">
+            <!-- ETAPA 3: layout de detalhes baseado no protótipo; demais páginas permanecem iguais. -->
+            <div class="panna-detail-top panna-detail-top--new">
+                <div>
+                    <p class="panna-detail-eyebrow">OPERAÇÕES / EQUIPAMENTOS</p>
+                    <h1 class="title-h1" id="panna-detalhe-nome">Detalhes do equipamento</h1>
+                    <p class="panna-detail-subtitle"><span id="panna-detalhe-codigo"></span> · <span id="panna-detalhe-local"></span></p>
+                </div>
+                <div class="panna-detail-actions">
+                    <a class="panna-outline-btn" href="GE1.html">Voltar</a>
+                    <a class="panna-yellow-btn" id="panna-editar" href="GE1.html">Editar</a>
+                </div>
+            </div>
+            <nav class="panna-detail-tabs" aria-label="Seções do equipamento">
+                <a class="panna-tab-active" href="#panna-detalhes">Equipamento</a>
+                <a href="#panna-manutencao">Manutenção</a>
+                <a href="#panna-historico-card">Histórico</a>
+            </nav>
+            <div class="panna-detail-layout">
+                <div class="panna-detail-main">
+                    <section class="panna-detail-card" id="panna-detalhes">
+                        <div class="panna-card-heading"><h2>Dados do equipamento</h2><span class="panna-detail-status" id="panna-detalhe-situacao"></span></div>
+                        <div class="panna-detail-grid" id="panna-campos-equipamento"></div>
+                    </section>
+                    <section class="panna-detail-card" id="panna-manutencao">
+                        <h2>Plano de manutenção</h2>
+                        <div class="panna-detail-grid" id="panna-campos-manutencao"></div>
+                    </section>
+                    <section class="panna-detail-card" id="panna-historico-card">
+                        <h2>Últimos eventos</h2>
+                        <div id="panna-historico" class="panna-eventos"></div>
+                    </section>
+                </div>
+                <aside class="panna-detail-aside">
+                    <section class="panna-detail-card panna-preventiva-card">
+                        <h2>Próxima preventiva</h2>
+                        <div class="panna-preventiva-count"><strong id="panna-dias-preventiva">—</strong><span id="panna-dias-unidade">dias</span></div>
+                        <p id="panna-data-preventiva">Sem data prevista</p>
+                        <div class="panna-progress" role="progressbar" aria-label="Prazo para a próxima manutenção" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><div id="panna-progresso-preventiva"></div></div>
+                        <p id="panna-regra-preventiva" class="panna-preventiva-rule"></p>
+                        <p id="panna-alerta-preventiva" class="panna-preventiva-alerta"></p>
+                        <a href="#panna-manutencao" class="panna-outline-btn panna-full-btn">Ver plano de manutenção</a>
+                    </section>
+                    <section class="panna-detail-card panna-qr-card">
+                        <h2>QR Code do equipamento</h2>
+                        <div class="panna-qr-content">
+                            <!-- Imagem ilustrativa já existente no projeto; QR individual será uma etapa futura. -->
+                            <img src="assets/qr_code.png" alt="QR Code ilustrativo do equipamento" class="panna-qr-image">
+                            <div class="panna-qr-info"><strong id="panna-qr-codigo"></strong><small id="panna-qr-nome"></small><span class="panna-qr-note">Imagem ilustrativa</span></div>
+                        </div>
+                    </section>
+                </aside>
+            </div>
+        </main>
+    </div>
+    <!-- JavaScript compartilhado: menu, armazenamento e cadastro. -->
+    <script src="equipamentos-iniciais.js"></script>
+    <script src="panna.js"></script>
+</body>
+</html>
