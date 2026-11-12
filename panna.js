@@ -87,53 +87,119 @@
             insumos:e.insumo?[{nome:e.insumo,quantidade:1,unidade:'un'}]:[]}];
     }
     const criarIdPlano = () => 'prev-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2,8);
+    // ETAPA 6 — sugestões de preventivas por grupo. São sugestões editáveis,
+    // não regras obrigatórias: cada equipe pode acrescentar outras opções.
+    const TIPOS_PREVENTIVA_POR_GRUPO = {
+        aspiradores:['Troca de filtro','Limpeza do reservatório','Inspeção de mangueiras','Revisão elétrica','Inspeção do motor'],
+        medicao:['Calibração','Verificação metrológica','Inspeção de sensores','Teste de precisão','Limpeza técnica'],
+        tratores:['Troca de óleo','Troca de filtros','Lubrificação','Inspeção hidráulica','Revisão de freios'],
+        betoneiras:['Lubrificação','Inspeção de correias','Limpeza do tambor','Revisão elétrica'],
+        enceradeiras:['Troca de escovas','Inspeção do disco','Revisão elétrica','Lubrificação'],
+        esmerilhadeiras:['Inspeção do disco','Inspeção de rolamentos','Revisão elétrica','Limpeza técnica']
+    };
+    const TIPOS_GERAIS = ['Inspeção geral','Limpeza','Lubrificação','Troca de filtro','Revisão elétrica','Calibração','Outros'];
+    const UNIDADES_INSUMO = ['un','ml','L','mg','g','kg','mm','cm','m','m²','m³','par','jogo','kit','rolo'];
     function iniciarEditorPreventivas(original) {
         const lista = $('#panna-lista-planos');
         if (!lista) return () => [];
-        let planos = structuredClone(planosDoEquipamento(original||{}));
-        const tipos = ['Troca de óleo','Troca de filtro','Revisão elétrica','Lubrificação','Inspeção','Outros'];
-        const periodos = ['Semanal','Mensal','Trimestral','Semestral','Anual'];
-        function seletor(opcoes,valor,classe) {
-            const select=document.createElement('select');select.className='register-form__input '+classe;
+        const planos = structuredClone(planosDoEquipamento(original||{})).map(p=>({...p,insumos:p.insumos||[],_salvo:true}));
+        const periodos=['Diária','Semanal','Quinzenal','Mensal','Bimestral','Trimestral','Semestral','Anual'];
+        let aberto=null;
+        const grupoSelect=$('#equipment-group-equip');
+        const normalizar=v=>(v||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
+        function sugestoes() {
+            const grupo=normalizar(grupoSelect?.value);
+            const chave=Object.keys(TIPOS_PREVENTIVA_POR_GRUPO).find(k=>grupo.includes(k));
+            return [...new Set([...(TIPOS_PREVENTIVA_POR_GRUPO[chave]||[]),...TIPOS_GERAIS])];
+        }
+        function seletor(opcoes,valor) {
+            const select=document.createElement('select');select.className='register-form__input';
             select.add(new Option('Selecione',''));
             opcoes.forEach(v=>select.add(new Option(v,v)));
-            if(valor && !opcoes.includes(valor)) select.add(new Option(valor,valor));
+            if(valor&&!opcoes.includes(valor))select.add(new Option(valor,valor));
             select.value=valor||'';return select;
         }
-        function campoPlano(rotulo,controle) {const label=document.createElement('label');label.className='panna-plano-campo';const titulo=document.createElement('span');titulo.textContent=rotulo;label.append(titulo,controle);return label;}
+        function campoPlano(rotulo,controle) {
+            const label=document.createElement('label');label.className='panna-plano-campo';
+            const span=document.createElement('span');span.textContent=rotulo;
+            label.append(span,controle);return label;
+        }
+        function validar(p,indice) {
+            if(!p.tipo||!p.periodicidade||!p.dataPrevista){alert('Preencha tipo, periodicidade e próxima data da preventiva '+(indice+1)+'.');return false;}
+            for(const insumo of p.insumos){
+                if(!String(insumo.nome||'').trim()||!(Number(insumo.quantidade)>0)||!String(insumo.unidade||'').trim()){
+                    alert('Preencha nome, quantidade e unidade de todos os insumos da preventiva '+(indice+1)+'.');return false;
+                }
+            }
+            return true;
+        }
+        // ETAPA 7: ícones SVG locais, sem dependência de bibliotecas externas.
+        // O texto acessível permanece em aria-label/title, mesmo sem botão textual.
+        function botaoIcone(nome, titulo, acao) {
+            const botao=document.createElement('button');
+            botao.type='button';
+            botao.className='panna-icone-acao panna-icone-'+nome;
+            botao.setAttribute('aria-label',titulo);
+            botao.title=titulo;
+            const caminhos={
+                editar:'<path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L9 17l-4 1 1-4Z"/>',
+                excluir:'<path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 10v6"/><path d="M14 10v6"/>'
+            };
+            botao.innerHTML='<svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+caminhos[nome]+'</svg>';
+            botao.onclick=acao;
+            return botao;
+        }
         function render() {
             lista.replaceChildren();
-            if(!planos.length){const p=document.createElement('p');p.className='panna-planos-vazio';p.textContent='Nenhuma preventiva cadastrada. Clique em “Nova preventiva” para adicionar.';lista.append(p);}
-            planos.forEach((plano,indice)=>{
-                const card=document.createElement('article');card.className='panna-plano-card';
-                const header=document.createElement('div');header.className='panna-plano-topo';
-                const titulo=document.createElement('h3');titulo.textContent='Preventiva '+(indice+1);
-                const remover=document.createElement('button');remover.type='button';remover.className='panna-outline-btn';remover.textContent='Remover preventiva';remover.onclick=()=>{planos.splice(indice,1);render();};header.append(titulo,remover);card.append(header);
-                const grid=document.createElement('div');grid.className='panna-plano-grid';
-                const tipo=seletor(tipos,plano.tipo,'');tipo.onchange=()=>plano.tipo=tipo.value;
-                const periodo=seletor(periodos,plano.periodicidade,'');periodo.onchange=()=>plano.periodicidade=periodo.value;
-                const data=document.createElement('input');data.type='date';data.className='register-form__input';data.value=normalizarDataISO(plano.dataPrevista);data.onchange=()=>plano.dataPrevista=data.value;
-                const aviso=seletor(['7 dias','15 dias','30 dias'],plano.avisoAntecipado==='day7'?'7 dias':plano.avisoAntecipado==='day15'?'15 dias':plano.avisoAntecipado==='day30'?'30 dias':plano.avisoAntecipado,'');aviso.onchange=()=>plano.avisoAntecipado=aviso.value;
-                grid.append(campoPlano('Tipo de manutenção',tipo),campoPlano('Periodicidade',periodo),campoPlano('Próxima data prevista',data),campoPlano('Aviso antecipado',aviso));card.append(grid);
-                const insumosTitulo=document.createElement('div');insumosTitulo.className='panna-plano-topo';const subtitulo=document.createElement('h4');subtitulo.textContent='Insumos necessários';const add=document.createElement('button');add.type='button';add.className='panna-outline-btn';add.textContent='+ Adicionar insumo';add.onclick=()=>{plano.insumos.push({nome:'',quantidade:1,unidade:'un'});render();};insumosTitulo.append(subtitulo,add);card.append(insumosTitulo);
-                plano.insumos.forEach((insumo,i)=>{
-                    const linha=document.createElement('div');linha.className='panna-insumo-linha';
-                    const nome=document.createElement('input');nome.className='register-form__input';nome.placeholder='Nome do insumo';nome.setAttribute('aria-label','Nome do insumo');nome.value=insumo.nome||'';nome.oninput=()=>insumo.nome=nome.value;
-                    const qtd=document.createElement('input');qtd.className='register-form__input';qtd.type='number';qtd.min='0.01';qtd.step='any';qtd.placeholder='Quantidade';qtd.setAttribute('aria-label','Quantidade');qtd.value=insumo.quantidade??1;qtd.oninput=()=>insumo.quantidade=qtd.value;
-                    const unidade=document.createElement('input');unidade.className='register-form__input';unidade.placeholder='Unidade (un, L, kg...)';unidade.setAttribute('aria-label','Unidade');unidade.value=insumo.unidade||'';unidade.oninput=()=>insumo.unidade=unidade.value;
-                    const excluir=document.createElement('button');excluir.type='button';excluir.className='panna-outline-btn';excluir.textContent='Remover';excluir.onclick=()=>{plano.insumos.splice(i,1);render();};linha.append(nome,qtd,unidade,excluir);card.append(linha);
-                });lista.append(card);
+            if(!planos.length){const vazio=document.createElement('p');vazio.className='panna-planos-vazio';vazio.textContent='Nenhuma preventiva cadastrada.';lista.append(vazio);}
+            planos.forEach((p,i)=>{
+                const card=document.createElement('article');card.className='panna-plano-card'+(aberto===p.id?' panna-plano-aberto':'');
+                const cab=document.createElement('div');cab.className='panna-plano-topo panna-plano-cabecalho';
+                const titulo=document.createElement('button');titulo.type='button';titulo.className='panna-plano-toggle';
+                titulo.textContent=(p._salvo?'▸ ':'▾ ')+(p.tipo||'Nova preventiva')+' · '+(p.periodicidade||'Sem periodicidade')+(p.dataPrevista?' · '+p.dataPrevista:'');
+                titulo.setAttribute('aria-expanded',String(aberto===p.id));titulo.onclick=()=>{aberto=aberto===p.id?null:p.id;render();};
+                const acoes=document.createElement('div');acoes.className='panna-plano-acoes';
+                const editar=botaoIcone('editar','Editar preventiva',()=>{p._salvo=false;aberto=p.id;render();});
+                const excluir=botaoIcone('excluir','Excluir preventiva',()=>{if(confirm('Excluir esta manutenção preventiva?')){planos.splice(i,1);if(aberto===p.id)aberto=null;render();}});
+                if(p._salvo)acoes.append(editar);acoes.append(excluir);cab.append(titulo,acoes);card.append(cab);
+                if(aberto===p.id){
+                    const grid=document.createElement('div');grid.className='panna-plano-grid';
+                    const tipo=seletor(sugestoes(),p.tipo);tipo.onchange=()=>{p.tipo=tipo.value;p._salvo=false;};
+                    const periodo=seletor(periodos,p.periodicidade);periodo.onchange=()=>{p.periodicidade=periodo.value;p._salvo=false;};
+                    const data=document.createElement('input');data.type='date';data.className='register-form__input';data.value=normalizarDataISO(p.dataPrevista);data.onchange=()=>{p.dataPrevista=data.value;p._salvo=false;};
+                    const aviso=seletor(['7 dias','15 dias','30 dias'],p.avisoAntecipado);aviso.onchange=()=>{p.avisoAntecipado=aviso.value;p._salvo=false;};
+                    grid.append(campoPlano('Tipo de manutenção',tipo),campoPlano('Periodicidade',periodo),campoPlano('Próxima data prevista',data),campoPlano('Aviso antecipado',aviso));card.append(grid);
+                    const linhaTopo=document.createElement('div');linhaTopo.className='panna-plano-topo';
+                    const subt=document.createElement('h4');subt.textContent='Insumos necessários';
+                    const adicionar=document.createElement('button');adicionar.type='button';adicionar.className='panna-outline-btn';adicionar.textContent='+ Insumo';adicionar.onclick=()=>{p.insumos.push({nome:'',quantidade:1,unidade:'un'});p._salvo=false;render();};
+                    linhaTopo.append(subt,adicionar);card.append(linhaTopo);
+                    p.insumos.forEach((insumo,j)=>{
+                        const linha=document.createElement('div');linha.className='panna-insumo-linha';
+                        const nome=document.createElement('input');nome.className='register-form__input';nome.placeholder='Nome do insumo';nome.setAttribute('aria-label','Nome do insumo');nome.value=insumo.nome||'';nome.oninput=()=>{insumo.nome=nome.value;p._salvo=false;};
+                        const qtd=document.createElement('input');qtd.className='register-form__input';qtd.type='number';qtd.min='0.01';qtd.step='any';qtd.placeholder='Qtd.';qtd.setAttribute('aria-label','Quantidade');qtd.value=insumo.quantidade??1;qtd.oninput=()=>{insumo.quantidade=qtd.value;p._salvo=false;};
+                        const unidade=seletor(UNIDADES_INSUMO,insumo.unidade||'un');unidade.setAttribute('aria-label','Unidade');unidade.onchange=()=>{insumo.unidade=unidade.value;p._salvo=false;};
+                        const remover=botaoIcone('excluir','Remover insumo',()=>{p.insumos.splice(j,1);p._salvo=false;render();});
+                        linha.append(nome,qtd,unidade,remover);card.append(linha);
+                    });
+                    const salvar=document.createElement('button');salvar.type='button';salvar.className='panna-yellow-btn panna-salvar-plano';salvar.textContent='Salvar preventiva';
+                    salvar.onclick=()=>{if(!validar(p,i))return;p._salvo=true;aberto=null;render();};card.append(salvar);
+                }
+                lista.append(card);
             });
         }
-        $('#panna-adicionar-plano').addEventListener('click',()=>{planos.push({id:criarIdPlano(),tipo:'',periodicidade:'',dataPrevista:'',avisoAntecipado:'',insumos:[]});render();});
+        $('#panna-adicionar-plano').addEventListener('click',()=>{
+            const p={id:criarIdPlano(),tipo:'',periodicidade:'',dataPrevista:'',avisoAntecipado:'',insumos:[],_salvo:false};
+            planos.push(p);aberto=p.id;render();
+        });
+        // Atualiza as sugestões quando o grupo mudar; mantém valores já escolhidos.
+        grupoSelect?.addEventListener('change',()=>{if(aberto!==null)render();});
         render();
         return () => {
-            for(let i=0;i<planos.length;i++) {
-                const p=planos[i];
-                if(!p.tipo||!p.periodicidade||!p.dataPrevista) {alert('Preencha tipo, periodicidade e data prevista da preventiva '+(i+1)+'.');return null;}
-                for(const insumo of p.insumos) if(!insumo.nome.trim()||!(Number(insumo.quantidade)>0)||!insumo.unidade.trim()){alert('Preencha nome, quantidade maior que zero e unidade dos insumos da preventiva '+(i+1)+'.');return null;}
+            for(let i=0;i<planos.length;i++){
+                if(!validar(planos[i],i))return null;
+                if(!planos[i]._salvo){alert('Clique em “Salvar preventiva” antes de salvar o equipamento.');return null;}
             }
-            return structuredClone(planos);
+            return planos.map(({_salvo,...p})=>structuredClone(p));
         };
     }
     function normalizarDataISO(data) {
@@ -392,7 +458,7 @@
         if (!planos.length) {const p=document.createElement('p');p.textContent='Nenhuma preventiva cadastrada.';area.append(p);}
         planos.forEach((plano,i)=>{
             const card=document.createElement('article');card.className='panna-plano-resumo';
-            const h=document.createElement('h3');h.textContent=(i+1)+'. '+(plano.tipo||'Preventiva');card.append(h);
+            const h=document.createElement('h3');h.textContent=plano.tipo||'Preventiva';card.append(h);const etiqueta=document.createElement('span');etiqueta.className='panna-plano-etiqueta';etiqueta.textContent='Preventiva '+(i+1);card.append(etiqueta);
             pannaAdicionarCampo(card,'Periodicidade',plano.periodicidade);
             pannaAdicionarCampo(card,'Próxima data prevista',dataBR(plano.dataPrevista));
             pannaAdicionarCampo(card,'Aviso antecipado',plano.avisoAntecipado);
@@ -402,7 +468,8 @@
             if(!ul.children.length){const li=document.createElement('li');li.textContent='Nenhum insumo cadastrado';ul.append(li);}
             card.append(ul);area.append(card);
         });
-        const editarPlanos=document.createElement('a');editarPlanos.href='CE1.html?editar='+encodeURIComponent(item.codigo)+'#panna-planos-titulo';editarPlanos.className='panna-yellow-btn panna-planos-link';editarPlanos.textContent='+ Adicionar ou editar preventivas';area.append(editarPlanos);
+        // ETAPA 7: a gestão das preventivas ficará na aba de Manutenções.
+        // Não exibimos mais o atalho de edição nesta área de detalhes.
         // Próxima preventiva: somente uma data cadastrada é exibida como agendada.
         // Nunca inventamos um agendamento a partir da periodicidade isolada.
         const datas = planos.map(p=>({plano:p,data:pannaLerData(p.dataPrevista)})).filter(x=>x.data).sort((a,b)=>a.data-b.data);
