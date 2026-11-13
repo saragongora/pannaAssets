@@ -23,6 +23,17 @@
     function salvarEquipamentos(lista) {
         localStorage.setItem(STORAGE_KEY, JSON.stringify(lista));
     }
+    // ETAPA 11 — Trilha de auditoria POR EQUIPAMENTO.
+    // Cada evento guarda o instante real do registro, seu tipo e uma descrição.
+    // Não criamos eventos retroativos para ações que nunca foram registradas.
+    function registrarEvento(equipamento, tipo, titulo, descricao = '', dataEvento = null) {
+        if (!Array.isArray(equipamento.eventos)) equipamento.eventos = [];
+        equipamento.eventos.push({
+            id: 'evt-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 9),
+            tipo, titulo, descricao,
+            data: dataEvento || new Date().toISOString()
+        });
+    }
     // Menu: o estado é preservado durante a navegação entre as telas.
     function iniciarMenu() {
         const botao = $('#toggle-sidebar');
@@ -248,9 +259,13 @@
             const proximas = planos.map(p=>normalizarDataISO(p.dataPrevista)).filter(Boolean).sort();
             equipamento.proximaPreventiva = proximas[0] || '';
             if (original) {
+                registrarEvento(equipamento, 'edicao', 'Dados do equipamento atualizados');
                 equipamento.atualizadoEm = new Date().toISOString();
                 lista[lista.findIndex(e => e.codigo === codigoEdicao)] = equipamento;
-            } else lista.push(equipamento);
+            } else {
+                registrarEvento(equipamento, 'cadastro', 'Equipamento cadastrado', 'Cadastro inicial do equipamento no sistema.');
+                lista.push(equipamento);
+            }
             try { salvarEquipamentos(lista); }
             catch (erro) { alert('Não foi possível salvar no navegador. Verifique o armazenamento disponível.'); return; }
             if (original) location.href = urlDetalhe(codigo);
@@ -368,29 +383,63 @@
     function historicoManutencoes(e) {
         return Array.isArray(e.historicoManutencoes) ? e.historicoManutencoes : [];
     }
+    // ETAPA 11 — Linha do tempo unificada: eventos do sistema e execuções antigas.
+    // Registros da Etapa 9 continuam aparecendo sem migração destrutiva.
     function renderizarHistoricoManutencoes(codigo) {
         const area = $('#panna-historico');
         if (!area) return;
-        const atual = listarEquipamentos().find(e => e.codigo === codigo);
-        const registros = atual ? [...historicoManutencoes(atual)] : [];
-        registros.sort((a,b) => (b.dataExecucao || '').localeCompare(a.dataExecucao || '') || (b.registradoEm || '').localeCompare(a.registradoEm || ''));
+        const equipamento = listarEquipamentos().find(e => e.codigo === codigo);
         area.replaceChildren();
-        if (!registros.length) {
-            const vazio=document.createElement('p');vazio.className='panna-planos-vazio';
-            vazio.textContent='Nenhuma manutenção realizada foi registrada para este equipamento.';area.append(vazio);return;
+        if (!equipamento) return;
+        const eventos = Array.isArray(equipamento.eventos) ? [...equipamento.eventos] : [];
+        // Execuções anteriores à trilha de auditoria não possuíam evento correspondente.
+        // Assim, combinamos os dados sem duplicar execuções já registradas na nova versão.
+        const idsExecucao = new Set(eventos.map(e => e.execucaoId).filter(Boolean));
+        historicoManutencoes(equipamento).forEach(r => {
+            if (idsExecucao.has(r.id)) return;
+            eventos.push({
+                id: 'exec-historico-' + r.id,
+                tipo: 'manutencao', titulo: 'Manutenção preventiva realizada: ' + (r.tipo || 'Preventiva'),
+                descricao: 'Responsável: ' + (r.responsavel || 'Não informado') + (r.observacoes ? ' · ' + r.observacoes : ''),
+                data: r.registradoEm || (r.dataExecucao ? r.dataExecucao + 'T12:00:00' : ''),
+                dataRealizacao: r.dataExecucao,
+                insumos: r.insumos || []
+            });
+        });
+        // Cadastro antigo: só usamos a data existente, sem inventar outros eventos.
+        if (equipamento.criadoEm && !eventos.some(e => e.tipo === 'cadastro')) {
+            eventos.push({id:'cadastro-legado',tipo:'cadastro',titulo:'Equipamento cadastrado',descricao:'Registro inicial do equipamento.',data:equipamento.criadoEm});
         }
-        registros.forEach(r => {
-            const artigo=document.createElement('article');artigo.className='panna-historico-registro';
-            const topo=document.createElement('div');topo.className='panna-historico-topo';
-            const titulo=document.createElement('strong');titulo.textContent=r.tipo || 'Manutenção preventiva';
-            const data=document.createElement('time');data.textContent=dataBR(r.dataExecucao);data.dateTime=r.dataExecucao || '';
-            topo.append(titulo,data);artigo.append(topo);
-            const responsavel=document.createElement('p');responsavel.textContent='Responsável: '+(r.responsavel || 'Não informado');artigo.append(responsavel);
-            if(r.observacoes){const obs=document.createElement('p');obs.textContent='Observações: '+r.observacoes;artigo.append(obs);}
-            const insumos=Array.isArray(r.insumos)?r.insumos:[];
-            if(insumos.length){const detalhes=document.createElement('details');const resumo=document.createElement('summary');resumo.textContent='Insumos registrados ('+insumos.length+')';detalhes.append(resumo);
-                const ul=document.createElement('ul');insumos.forEach(x=>{const li=document.createElement('li');li.textContent=x.nome+' — '+x.quantidade+' '+x.unidade;ul.append(li);});detalhes.append(ul);artigo.append(detalhes);}
-            area.append(artigo);
+        eventos.sort((a,b) => (Date.parse(b.data)||0)-(Date.parse(a.data)||0));
+        if (!eventos.length) {
+            const vazio = document.createElement('p');
+            vazio.className = 'panna-planos-vazio';
+            vazio.textContent = 'Ainda não existem eventos registrados para este equipamento. As próximas ações aparecerão aqui.';
+            area.append(vazio); return;
+        }
+        eventos.forEach(ev => {
+            const linha = document.createElement('article');
+            linha.className = 'panna-evento-linha';
+            const ponto = document.createElement('span');
+            ponto.className = 'panna-evento-ponto panna-evento-' + (['cadastro','status','manutencao','preventiva','edicao'].includes(ev.tipo) ? ev.tipo : 'outro');
+            ponto.setAttribute('aria-hidden','true');
+            const corpo = document.createElement('div'); corpo.className = 'panna-evento-corpo';
+            const titulo = document.createElement('strong'); titulo.textContent = ev.titulo || 'Evento registrado';
+            corpo.append(titulo);
+            if (ev.descricao) {const detalhe = document.createElement('p'); detalhe.textContent = ev.descricao; corpo.append(detalhe);}
+            if (ev.dataRealizacao) {const exec = document.createElement('p'); exec.textContent = 'Realizada em ' + dataBR(ev.dataRealizacao); corpo.append(exec);}
+            if (Array.isArray(ev.insumos) && ev.insumos.length) {
+                const detalhes = document.createElement('details');
+                const resumo = document.createElement('summary'); resumo.textContent = 'Insumos utilizados (' + ev.insumos.length + ')';
+                const lista = document.createElement('ul');
+                ev.insumos.forEach(x => {const li=document.createElement('li');li.textContent=(x.nome||'Insumo')+' — '+x.quantidade+' '+(x.unidade||'');lista.append(li);});
+                detalhes.append(resumo,lista); corpo.append(detalhes);
+            }
+            const data = document.createElement('time');
+            const instante = new Date(ev.data);
+            data.textContent = Number.isNaN(instante.getTime()) ? 'Data não informada' : instante.toLocaleString('pt-BR', {day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'});
+            if (!Number.isNaN(instante.getTime())) data.dateTime=instante.toISOString();
+            corpo.append(data); linha.append(ponto,corpo); area.append(linha);
         });
     }
     // ETAPA 8 — Editor exclusivo da aba Manutenção em GE2.
@@ -424,7 +473,7 @@
             select.value=valor||''; return select;
         }
         function registroAtual() { return listarEquipamentos().find(e=>e.codigo===item.codigo); }
-        function gravar(planos) {
+        function gravar(planos, evento = null) {
             const lista=listarEquipamentos();
             const indice=lista.findIndex(e=>e.codigo===item.codigo);
             if(indice<0) {alert('Equipamento não encontrado.');return false;}
@@ -433,6 +482,7 @@
             const datas=planos.map(p=>normalizarDataISO(p.dataPrevista)).filter(Boolean).sort();
             lista[indice].proximaPreventiva=datas[0]||'';
             lista[indice].atualizadoEm=new Date().toISOString();
+            if (evento) registrarEvento(lista[indice], 'preventiva', evento.titulo, evento.descricao);
             try {salvarEquipamentos(lista);} catch(e) {alert('Não foi possível salvar as preventivas.');return false;}
             return true;
         }
@@ -478,7 +528,7 @@
                 const planos=structuredClone(planosDoEquipamento(atual));
                 const indice=planos.findIndex(p=>p.id===r.id);
                 if(indice>=0)planos[indice]=r;else planos.push(r);
-                if(gravar(planos)){fechar();atualizarDetalhes();}
+                if(gravar(planos, {titulo:indice>=0?'Preventiva atualizada':'Preventiva cadastrada',descricao:r.tipo})){fechar();atualizarDetalhes();}
             }));
             editor.append(rodape);
             editor.scrollIntoView({behavior:'smooth',block:'nearest'});
@@ -522,7 +572,13 @@
                     responsavel:responsavel.value.trim(),observacoes:observacoes.value.trim(),
                     insumos:insumos.map(x=>({nome:String(x.nome).trim(),quantidade:Number(x.quantidade),unidade:x.unidade})),
                     registradoEm:new Date().toISOString()};
-                e.historicoManutencoes=[...historicoManutencoes(e),registro];e.atualizadoEm=new Date().toISOString();
+                e.historicoManutencoes=[...historicoManutencoes(e),registro];
+                registrarEvento(e,'manutencao','Manutenção preventiva realizada: '+registro.tipo,
+                    'Responsável: '+registro.responsavel+(registro.observacoes?' · '+registro.observacoes:''));
+                e.eventos[e.eventos.length-1].execucaoId=registro.id;
+                e.eventos[e.eventos.length-1].dataRealizacao=registro.dataExecucao;
+                e.eventos[e.eventos.length-1].insumos=registro.insumos;
+                e.atualizadoEm=new Date().toISOString();
                 try{salvarEquipamentos(equipamentos);}catch(erro){alert('Não foi possível registrar a realização.');return;}
                 fechar();renderizarHistoricoManutencoes(item.codigo);
                 alert('Realização registrada no histórico. A próxima data prevista não foi alterada.');
@@ -561,7 +617,7 @@
                 if(!insumos.length){const li=document.createElement('li');li.textContent='Nenhum insumo cadastrado';ul.append(li);}
                 detalhe.append(ul);
                 const acoes=document.createElement('div');acoes.className='panna-manutencao-acoes panna-acoes-linha';
-                const realizar=botao('Registrar realização','panna-outline-btn panna-registrar-realizacao',()=>abrirRegistro(p));
+                const realizar=botao('Marcar como realizado','panna-outline-btn panna-registrar-realizacao',()=>abrirRegistro(p));
                 const editar=botao('','panna-icone-acao panna-icone-editar',()=>abrir(p));
                 editar.innerHTML='<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L9 17l-4 1 1-4Z"/></svg>';
                 editar.title='Editar preventiva';editar.setAttribute('aria-label','Editar '+(p.tipo||'preventiva'));
@@ -569,7 +625,7 @@
                     if(!confirm('Excluir a preventiva "'+(p.tipo||'')+'"?'))return;
                     const dados=registroAtual();if(!dados)return;
                     const restante=planosDoEquipamento(dados).filter((x,j)=>x.id!==p.id || (p.id==null && j!==i));
-                    if(gravar(restante)){fechar();atualizarDetalhes();}
+                    if(gravar(restante, {titulo:'Preventiva excluída',descricao:p.tipo||'Preventiva'})){fechar();atualizarDetalhes();}
                 });
                 // Ícone de lixeira SVG correto, sem depender de fontes ou bibliotecas externas.
                 excluir.innerHTML='<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18M8 6V4h8v2m3 0-1 14H6L5 6m5 4v7m4-7v7"/></svg>';
@@ -630,6 +686,8 @@
                 atual.situacaoAntesInativacao = atual.situacao || 'Em funcionamento';
                 atual.situacao = 'Inativo';
             }
+            registrarEvento(atual, 'status', inativo ? 'Equipamento reativado' : 'Equipamento inativado',
+                'Situação alterada de '+(inativo?'Inativo':atual.situacaoAntesInativacao)+' para '+atual.situacao+'.');
             atual.atualizadoEm = new Date().toISOString();
             try { salvarEquipamentos(lista); }
             catch (erro) { alert('Não foi possível alterar a situação.'); return; }
@@ -718,7 +776,7 @@
         else { alerta.textContent = 'Preventiva programada'; alerta.className = 'panna-preventiva-alerta panna-alerta-ok'; }
         $('#panna-qr-codigo').textContent = item.codigo;
         $('#panna-qr-nome').textContent = item.nome || 'Equipamento';
-        // O histórico permanece vazio até a implementação dos registros de eventos.
+        // Atualiza a linha do tempo unificada com eventos e execuções existentes.
         renderizarHistoricoManutencoes(item.codigo);
     }
     document.addEventListener('DOMContentLoaded', () => {

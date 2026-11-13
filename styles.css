@@ -887,3 +887,12 @@ body.sidebar-collapsed .main-content { margin-left: 0; width: 100%; }
 #panna-manutencao .panna-editor-acoes{display:flex;align-items:center;justify-content:flex-end;gap:10px;margin-top:18px}
 #panna-manutencao .panna-editor-acoes button{margin:0}
 @media(max-width:760px){#panna-manutencao .panna-manutencao-tabela-cabecalho{display:none}#panna-manutencao .panna-manutencao-linha-resumo{grid-template-columns:minmax(0,1.3fr) minmax(0,1fr) 20px;gap:8px}#panna-manutencao .panna-col-insumos,#panna-manutencao .panna-col-periodo{display:none}#panna-manutencao .panna-editor-acoes{justify-content:stretch}#panna-manutencao .panna-editor-acoes button{flex:1}}
+
+/* ETAPA 11 — Linha do tempo de eventos do equipamento (GE2).
+   Estilos isolados para não afetar as outras páginas do grupo. */
+#panna-historico.panna-eventos{position:relative;margin-top:20px;padding-left:5px}
+.panna-evento-linha{display:grid;grid-template-columns:20px minmax(0,1fr);gap:12px;position:relative;min-height:72px}
+.panna-evento-linha:not(:last-child)::before{content:"";position:absolute;left:7px;top:19px;bottom:0;width:2px;background:#e5e7eb}
+.panna-evento-ponto{width:10px;height:10px;border-radius:50%;background:#64748b;margin-top:5px;z-index:1}
+.panna-evento-cadastro{background:#218553}.panna-evento-status{background:#b45309}.panna-evento-manutencao{background:#15803d}.panna-evento-preventiva{background:#2563a0}.panna-evento-edicao{background:#64748b}
+.panna-evento-corpo{padding-bottom:22px;min-width:0}.panna-evento-corpo strong{display:block;font-size:.92rem;color:#202020}.panna-evento-corpo p{font-size:.85rem;color:#59616b;margin:5px 0}.panna-evento-corpo time{display:block;font-size:.78rem;color:#77808a;margin-top:5px}.panna-evento-corpo details{font-size:.83rem;margin-top:8px}.panna-evento-corpo summary{cursor:pointer}.panna-evento-corpo ul{padding-left:20px;margin:6px 0}
