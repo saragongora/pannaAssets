@@ -55,9 +55,9 @@
                 </div>
             </div>
             <nav class="panna-detail-tabs" aria-label="Seções do equipamento">
-                <a class="panna-tab-active" href="#panna-detalhes">Equipamento</a>
-                <a href="#panna-manutencao">Manutenção</a>
-                <a href="#panna-historico-card">Histórico</a>
+                <a class="panna-tab-active" href="#panna-detalhes" data-panna-tab="equipamento">Equipamento</a>
+                <a href="#panna-manutencao" data-panna-tab="manutencao">Manutenção</a>
+                <a href="#panna-historico-card" data-panna-tab="historico">Histórico</a>
             </nav>
             <div class="panna-detail-layout">
                 <div class="panna-detail-main">
@@ -65,12 +65,14 @@
                         <div class="panna-card-heading"><h2>Dados do equipamento</h2><span class="panna-detail-status" id="panna-detalhe-situacao"></span></div>
                         <div class="panna-detail-grid" id="panna-campos-equipamento"></div>
                     </section>
-                    <section class="panna-detail-card" id="panna-manutencao">
-                        <h2>Plano de manutenção</h2>
-                        <div class="panna-detail-grid" id="panna-campos-manutencao"></div>
+                    <section class="panna-detail-card" id="panna-manutencao" hidden>
+                        <div class="panna-manutencao-heading"><div><h2>Manutenções preventivas</h2><p>Gerencie os planos preventivos deste equipamento.</p></div><button type="button" class="panna-yellow-btn" id="panna-nova-manutencao">+ Nova preventiva</button></div>
+                        <div id="panna-editor-manutencao" class="panna-editor-manutencao" hidden></div>
+                        <div class="panna-manutencao-tabela"><div class="panna-manutencao-tabela-cabecalho"><span>TIPO</span><span>INSUMOS</span><span>PERIODICIDADE</span><span>PRÓXIMA</span><span></span></div><div id="panna-campos-manutencao"></div></div>
                     </section>
-                    <section class="panna-detail-card" id="panna-historico-card">
-                        <h2>Últimos eventos</h2>
+                    <section class="panna-detail-card" id="panna-historico-card" hidden>
+                        <h2>Histórico de manutenções realizadas</h2>
+                        <p class="panna-historico-intro">As realizações registradas na aba Manutenção ficam salvas neste equipamento, mesmo após editar ou excluir um plano preventivo.</p>
                         <div id="panna-historico" class="panna-eventos"></div>
                     </section>
                 </div>
@@ -82,7 +84,7 @@
                         <div class="panna-progress" role="progressbar" aria-label="Prazo para a próxima manutenção" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><div id="panna-progresso-preventiva"></div></div>
                         <p id="panna-regra-preventiva" class="panna-preventiva-rule"></p>
                         <p id="panna-alerta-preventiva" class="panna-preventiva-alerta"></p>
-                        <a href="#panna-manutencao" class="panna-outline-btn panna-full-btn">Ver plano de manutenção</a>
+                        <a href="#panna-manutencao" class="panna-outline-btn panna-full-btn" data-panna-abrir-manutencao>Ver plano de manutenção</a>
                     </section>
                     <section class="panna-detail-card panna-qr-card">
                         <h2>QR Code do equipamento</h2>

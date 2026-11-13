@@ -841,3 +841,49 @@ body.sidebar-collapsed .main-content { margin-left: 0; width: 100%; }
 .panna-icone-excluir:hover{background:#fff0f0;border-color:#f1baba;color:#b42318}
 .panna-icone-acao:focus-visible{outline:2px solid #b18c00;outline-offset:2px}
 .panna-plano-acoes{gap:2px}
+
+/* ETAPA 8 — gestão de preventivas na aba Manutenção de GE2. */
+.panna-detail-card[hidden],.panna-editor-manutencao[hidden]{display:none!important}
+.panna-manutencao-heading{display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:16px}
+.panna-manutencao-heading h2,.panna-manutencao-heading h3,.panna-manutencao-heading h4{margin:0}
+.panna-manutencao-heading p,.panna-manutencao-meta{color:#666;font-size:13px;margin:5px 0 0}
+.panna-editor-manutencao{background:#fffdf3;border:1px solid #e9d68c;border-radius:12px;padding:18px;margin:18px 0}
+.panna-manutencao-acoes{display:flex;gap:8px;align-items:center}
+.panna-plano-gerenciavel{min-width:0}
+.panna-plano-gerenciavel details{border-top:1px solid #eee;padding-top:12px;margin-top:12px}
+.panna-plano-gerenciavel summary{cursor:pointer;font-size:13px;font-weight:600;color:#6a5700}
+.panna-manutencao-conteudo{padding:12px 0 0;display:grid;gap:8px}
+.panna-manutencao-conteudo ul{margin:0 0 0 16px;padding:0}
+@media(max-width:650px){.panna-manutencao-heading{align-items:flex-start}.panna-manutencao-heading>.panna-yellow-btn{width:100%}}
+
+/* ETAPA 9 — Histórico de execuções e ação de registrar realização. */
+.panna-historico-intro{color:#64748b;font-size:.9rem;margin:.5rem 0 1.2rem}
+.panna-historico-registro{border:1px solid #e5e7eb;border-left:3px solid #eab308;border-radius:10px;padding:16px;margin:12px 0;background:#fff}
+.panna-historico-registro p{margin:8px 0;color:#475569;font-size:.9rem}
+.panna-historico-registro ul{margin:10px 0;padding-left:22px}
+.panna-historico-topo{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.panna-historico-topo time{font-size:.85rem;color:#64748b}
+.panna-registrar-realizacao{font-size:.82rem;padding:7px 10px;white-space:nowrap}
+.panna-manutencao-acoes{flex-wrap:wrap;justify-content:flex-end}
+
+/* ETAPA 10 — Lista de preventivas expansível, inspirada no layout de referência.
+   Escopo restrito à aba Manutenção de GE2 para não afetar o cadastro CE1. */
+#panna-manutencao .panna-manutencao-tabela{border:1px solid #e6e6e4;border-radius:10px;overflow:hidden;background:white}
+#panna-manutencao .panna-manutencao-tabela-cabecalho,#panna-manutencao .panna-manutencao-linha-resumo{display:grid;grid-template-columns:minmax(125px,1.25fr) minmax(120px,1.25fr) minmax(105px,1fr) minmax(105px,1fr) 24px;gap:12px;align-items:center}
+#panna-manutencao .panna-manutencao-tabela-cabecalho{background:#f7f7f5;color:#777;font-size:11px;font-weight:700;padding:13px 16px}
+#panna-manutencao .panna-manutencao-linha{border-top:1px solid #ededeb;background:#fff}
+#panna-manutencao .panna-manutencao-linha-resumo{padding:16px;cursor:pointer;font-size:13px;list-style:none;min-height:56px}
+#panna-manutencao .panna-manutencao-linha-resumo::-webkit-details-marker{display:none}
+#panna-manutencao .panna-manutencao-linha-resumo:hover{background:#fffdf3}
+#panna-manutencao .panna-manutencao-linha-resumo:focus-visible{outline:2px solid #d9ac00;outline-offset:-3px}
+#panna-manutencao .panna-col-tipo{font-weight:700;color:#252525}
+#panna-manutencao .panna-col-insumos{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#555}
+#panna-manutencao .panna-col-data{font-weight:600}
+#panna-manutencao .panna-linha-seta{font-size:20px;color:#777;text-align:center;transition:transform .15s}
+#panna-manutencao details[open]>.panna-manutencao-linha-resumo .panna-linha-seta{transform:rotate(180deg)}
+#panna-manutencao .panna-manutencao-linha-detalhes{background:#fffef9;border-top:1px solid #eee8d6;padding:14px 18px 18px;font-size:13px}
+#panna-manutencao .panna-manutencao-linha-detalhes ul{margin:8px 0 12px;padding-left:20px}
+#panna-manutencao .panna-acoes-linha{justify-content:flex-end;margin-top:12px}
+#panna-manutencao .panna-editor-acoes{display:flex;align-items:center;justify-content:flex-end;gap:10px;margin-top:18px}
+#panna-manutencao .panna-editor-acoes button{margin:0}
+@media(max-width:760px){#panna-manutencao .panna-manutencao-tabela-cabecalho{display:none}#panna-manutencao .panna-manutencao-linha-resumo{grid-template-columns:minmax(0,1.3fr) minmax(0,1fr) 20px;gap:8px}#panna-manutencao .panna-col-insumos,#panna-manutencao .panna-col-periodo{display:none}#panna-manutencao .panna-editor-acoes{justify-content:stretch}#panna-manutencao .panna-editor-acoes button{flex:1}}

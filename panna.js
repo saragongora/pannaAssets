@@ -363,6 +363,224 @@
         const texto = document.createElement('strong'); texto.textContent = valor || 'Não informado';
         div.append(label, texto); container.append(div);
     }
+    // ETAPA 9 — Execuções concluídas são registros independentes dos planos.
+    // Excluir ou editar um plano não apaga o histórico já registrado.
+    function historicoManutencoes(e) {
+        return Array.isArray(e.historicoManutencoes) ? e.historicoManutencoes : [];
+    }
+    function renderizarHistoricoManutencoes(codigo) {
+        const area = $('#panna-historico');
+        if (!area) return;
+        const atual = listarEquipamentos().find(e => e.codigo === codigo);
+        const registros = atual ? [...historicoManutencoes(atual)] : [];
+        registros.sort((a,b) => (b.dataExecucao || '').localeCompare(a.dataExecucao || '') || (b.registradoEm || '').localeCompare(a.registradoEm || ''));
+        area.replaceChildren();
+        if (!registros.length) {
+            const vazio=document.createElement('p');vazio.className='panna-planos-vazio';
+            vazio.textContent='Nenhuma manutenção realizada foi registrada para este equipamento.';area.append(vazio);return;
+        }
+        registros.forEach(r => {
+            const artigo=document.createElement('article');artigo.className='panna-historico-registro';
+            const topo=document.createElement('div');topo.className='panna-historico-topo';
+            const titulo=document.createElement('strong');titulo.textContent=r.tipo || 'Manutenção preventiva';
+            const data=document.createElement('time');data.textContent=dataBR(r.dataExecucao);data.dateTime=r.dataExecucao || '';
+            topo.append(titulo,data);artigo.append(topo);
+            const responsavel=document.createElement('p');responsavel.textContent='Responsável: '+(r.responsavel || 'Não informado');artigo.append(responsavel);
+            if(r.observacoes){const obs=document.createElement('p');obs.textContent='Observações: '+r.observacoes;artigo.append(obs);}
+            const insumos=Array.isArray(r.insumos)?r.insumos:[];
+            if(insumos.length){const detalhes=document.createElement('details');const resumo=document.createElement('summary');resumo.textContent='Insumos registrados ('+insumos.length+')';detalhes.append(resumo);
+                const ul=document.createElement('ul');insumos.forEach(x=>{const li=document.createElement('li');li.textContent=x.nome+' — '+x.quantidade+' '+x.unidade;ul.append(li);});detalhes.append(ul);artigo.append(detalhes);}
+            area.append(artigo);
+        });
+    }
+    // ETAPA 8 — Editor exclusivo da aba Manutenção em GE2.
+    // Cada alteração é persistida imediatamente no equipamento, sem modificar o formulário CE1.
+    // Os identificadores dos planos são preservados para permitir edição e exclusão seguras.
+    function iniciarGestaoPreventivas(item, atualizarDetalhes) {
+        const area = $('#panna-campos-manutencao');
+        const editor = $('#panna-editor-manutencao');
+        const novo = $('#panna-nova-manutencao');
+        if (!area || !editor || !novo) return;
+        const periodos = ['Diária','Semanal','Quinzenal','Mensal','Bimestral','Trimestral','Semestral','Anual'];
+        const normalizar = v => (v || '').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
+        const grupo = normalizar(item.grupo);
+        const chave = Object.keys(TIPOS_PREVENTIVA_POR_GRUPO).find(k => grupo.includes(k));
+        const sugestoes = [...new Set([...(TIPOS_PREVENTIVA_POR_GRUPO[chave] || []), ...TIPOS_GERAIS])];
+        let emEdicao = null;
+        function botao(texto, classe, acao) {
+            const b = document.createElement('button'); b.type='button'; b.className=classe;
+            b.textContent=texto; b.addEventListener('click',acao); return b;
+        }
+        function campo(rotulo, elemento) {
+            const label=document.createElement('label'); label.className='panna-plano-campo';
+            const span=document.createElement('span'); span.textContent=rotulo;
+            label.append(span,elemento); return label;
+        }
+        function seletor(valores, valor) {
+            const select=document.createElement('select'); select.className='register-form__input';
+            select.add(new Option('Selecione',''));
+            valores.forEach(v=>select.add(new Option(v,v)));
+            if(valor&&!valores.includes(valor))select.add(new Option(valor,valor));
+            select.value=valor||''; return select;
+        }
+        function registroAtual() { return listarEquipamentos().find(e=>e.codigo===item.codigo); }
+        function gravar(planos) {
+            const lista=listarEquipamentos();
+            const indice=lista.findIndex(e=>e.codigo===item.codigo);
+            if(indice<0) {alert('Equipamento não encontrado.');return false;}
+            lista[indice].planosPreventivos=planos;
+            // Compatibilidade com a listagem GE1 e com registros anteriores.
+            const datas=planos.map(p=>normalizarDataISO(p.dataPrevista)).filter(Boolean).sort();
+            lista[indice].proximaPreventiva=datas[0]||'';
+            lista[indice].atualizadoEm=new Date().toISOString();
+            try {salvarEquipamentos(lista);} catch(e) {alert('Não foi possível salvar as preventivas.');return false;}
+            return true;
+        }
+        function abrir(plano) {
+            const atual=registroAtual(); if(!atual)return;
+            const existente=plano ? planosDoEquipamento(atual).find(p=>p.id===plano.id) : null;
+            const r=structuredClone(existente||{id:criarIdPlano(),tipo:'',periodicidade:'',dataPrevista:'',avisoAntecipado:'',insumos:[]});
+            r.insumos=Array.isArray(r.insumos)?r.insumos:[];
+            emEdicao=r.id;
+            editor.hidden=false; editor.replaceChildren();
+            const topo=document.createElement('div');topo.className='panna-manutencao-heading';
+            const titulo=document.createElement('h3');titulo.textContent=existente?'Editar preventiva':'Nova preventiva';
+            topo.append(titulo);editor.append(topo);
+            const grid=document.createElement('div');grid.className='panna-plano-grid';
+            const tipo=seletor(sugestoes,r.tipo); const periodicidade=seletor(periodos,r.periodicidade);
+            const data=document.createElement('input');data.type='date';data.className='register-form__input';data.value=normalizarDataISO(r.dataPrevista);
+            const aviso=seletor(['7 dias','15 dias','30 dias'],r.avisoAntecipado);
+            grid.append(campo('Tipo de manutenção',tipo),campo('Periodicidade',periodicidade),campo('Próxima data prevista',data),campo('Aviso antecipado',aviso));editor.append(grid);
+            const insumosTitulo=document.createElement('div');insumosTitulo.className='panna-manutencao-heading';
+            const h=document.createElement('h4');h.textContent='Insumos necessários';
+            insumosTitulo.append(h,botao('+ Insumo','panna-outline-btn',()=>{r.insumos.push({nome:'',quantidade:1,unidade:'un'});desenharInsumos();}));
+            editor.append(insumosTitulo);
+            const listaInsumos=document.createElement('div');editor.append(listaInsumos);
+            function desenharInsumos() {
+                listaInsumos.replaceChildren();
+                r.insumos.forEach((insumo,i)=>{
+                    const linha=document.createElement('div');linha.className='panna-insumo-linha';
+                    const nome=document.createElement('input');nome.className='register-form__input';nome.placeholder='Nome do insumo';nome.setAttribute('aria-label','Nome do insumo');nome.value=insumo.nome||'';nome.oninput=()=>insumo.nome=nome.value;
+                    const quantidade=document.createElement('input');quantidade.className='register-form__input';quantidade.type='number';quantidade.min='0.01';quantidade.step='any';quantidade.setAttribute('aria-label','Quantidade');quantidade.value=insumo.quantidade??1;quantidade.oninput=()=>insumo.quantidade=quantidade.value;
+                    const unidade=seletor(UNIDADES_INSUMO,insumo.unidade||'un');unidade.setAttribute('aria-label','Unidade');unidade.onchange=()=>insumo.unidade=unidade.value;
+                    const remover=botao('✕','panna-icone-acao panna-icone-excluir',()=>{r.insumos.splice(i,1);desenharInsumos();});remover.title='Remover insumo';remover.setAttribute('aria-label','Remover insumo');
+                    linha.append(nome,quantidade,unidade,remover);listaInsumos.append(linha);
+                });
+            }
+            desenharInsumos();
+            const rodape=document.createElement('div');rodape.className='panna-editor-acoes';
+            rodape.append(botao('Cancelar','panna-outline-btn',fechar));
+            rodape.append(botao('Salvar preventiva','panna-yellow-btn',()=>{
+                r.tipo=tipo.value;r.periodicidade=periodicidade.value;r.dataPrevista=data.value;r.avisoAntecipado=aviso.value;
+                if(!r.tipo||!r.periodicidade||!r.dataPrevista){alert('Preencha tipo, periodicidade e próxima data prevista.');return;}
+                if(r.insumos.some(x=>!String(x.nome||'').trim()||!(Number(x.quantidade)>0)||!x.unidade)){alert('Preencha nome, quantidade e unidade de todos os insumos.');return;}
+                const atual=registroAtual();if(!atual)return;
+                const planos=structuredClone(planosDoEquipamento(atual));
+                const indice=planos.findIndex(p=>p.id===r.id);
+                if(indice>=0)planos[indice]=r;else planos.push(r);
+                if(gravar(planos)){fechar();atualizarDetalhes();}
+            }));
+            editor.append(rodape);
+            editor.scrollIntoView({behavior:'smooth',block:'nearest'});
+        }
+        // Formulário de realização: copia os insumos planejados como ponto de partida,
+        // mas permite informar as quantidades efetivamente utilizadas.
+        function abrirRegistro(plano) {
+            fechar();
+            editor.hidden=false;editor.replaceChildren();
+            const cab=document.createElement('div');cab.className='panna-manutencao-heading';
+            const titulo=document.createElement('h3');titulo.textContent='Registrar realização — '+(plano.tipo||'Preventiva');
+            cab.append(titulo,botao('Cancelar','panna-outline-btn',fechar));editor.append(cab);
+            const grade=document.createElement('div');grade.className='panna-plano-grid';
+            const data=document.createElement('input');data.type='date';data.className='register-form__input';data.value=new Date().toLocaleDateString('en-CA');
+            const responsavel=document.createElement('input');responsavel.className='register-form__input';responsavel.placeholder='Nome do responsável';
+            grade.append(campo('Data da realização',data),campo('Responsável',responsavel));editor.append(grade);
+            const observacoes=document.createElement('textarea');observacoes.className='register-form__input';observacoes.rows=3;observacoes.placeholder='Serviços realizados, ocorrências e observações';
+            editor.append(campo('Observações',observacoes));
+            const h=document.createElement('h4');h.textContent='Insumos utilizados (ajuste as quantidades)';editor.append(h);
+            const insumos=structuredClone(Array.isArray(plano.insumos)?plano.insumos:[]);
+            const listaInsumos=document.createElement('div');editor.append(listaInsumos);
+            function desenhar(){listaInsumos.replaceChildren();insumos.forEach((x,i)=>{
+                const linha=document.createElement('div');linha.className='panna-insumo-linha';
+                const nome=document.createElement('input');nome.className='register-form__input';nome.placeholder='Insumo';nome.value=x.nome||'';nome.setAttribute('aria-label','Nome do insumo');nome.oninput=()=>x.nome=nome.value;
+                const qtd=document.createElement('input');qtd.type='number';qtd.min='0.01';qtd.step='any';qtd.className='register-form__input';qtd.value=x.quantidade??1;qtd.setAttribute('aria-label','Quantidade utilizada');qtd.oninput=()=>x.quantidade=qtd.value;
+                const unidade=seletor(UNIDADES_INSUMO,x.unidade||'un');unidade.setAttribute('aria-label','Unidade do insumo');unidade.onchange=()=>x.unidade=unidade.value;
+                const remover=botao('✕','panna-icone-acao panna-icone-excluir',()=>{insumos.splice(i,1);desenhar();});remover.title='Remover insumo';remover.setAttribute('aria-label','Remover insumo');
+                linha.append(nome,qtd,unidade,remover);listaInsumos.append(linha);
+            });}
+            desenhar();
+            editor.append(botao('+ Insumo utilizado','panna-outline-btn',()=>{insumos.push({nome:'',quantidade:1,unidade:'un'});desenhar();}));
+            editor.append(botao('Confirmar realização','panna-yellow-btn panna-salvar-plano',()=>{
+                if(!data.value||data.value>new Date().toLocaleDateString('en-CA')){alert('Informe uma data de realização válida, até hoje.');return;}
+                if(!responsavel.value.trim()){alert('Informe o responsável pela realização.');return;}
+                if(insumos.some(x=>!String(x.nome||'').trim()||!(Number(x.quantidade)>0)||!x.unidade)){alert('Confira os insumos utilizados.');return;}
+                const equipamentos=listarEquipamentos();const indice=equipamentos.findIndex(e=>e.codigo===item.codigo);
+                if(indice<0){alert('Equipamento não encontrado.');return;}
+                const e=equipamentos[indice];
+                const registro={id:'exec-'+Date.now().toString(36)+'-'+Math.random().toString(36).slice(2,8),
+                    planoId:plano.id||null,tipo:plano.tipo||'Preventiva',dataExecucao:data.value,
+                    responsavel:responsavel.value.trim(),observacoes:observacoes.value.trim(),
+                    insumos:insumos.map(x=>({nome:String(x.nome).trim(),quantidade:Number(x.quantidade),unidade:x.unidade})),
+                    registradoEm:new Date().toISOString()};
+                e.historicoManutencoes=[...historicoManutencoes(e),registro];e.atualizadoEm=new Date().toISOString();
+                try{salvarEquipamentos(equipamentos);}catch(erro){alert('Não foi possível registrar a realização.');return;}
+                fechar();renderizarHistoricoManutencoes(item.codigo);
+                alert('Realização registrada no histórico. A próxima data prevista não foi alterada.');
+            }));
+            editor.scrollIntoView({behavior:'smooth',block:'nearest'});
+        }
+        function fechar(){emEdicao=null;editor.hidden=true;editor.replaceChildren();}
+        function render() {
+            const atual=registroAtual();if(!atual)return;
+            const planos=planosDoEquipamento(atual);
+            area.replaceChildren();
+            if(!planos.length){const vazio=document.createElement('p');vazio.className='panna-planos-vazio';vazio.textContent='Nenhuma manutenção preventiva cadastrada.';area.append(vazio);}
+            // ETAPA 10 — Lista compacta com detalhes expansíveis, sem alterar os planos salvos.
+            // <details> oferece abertura por clique e teclado sem criar estado adicional.
+            planos.forEach((p,i)=>{
+                const linha=document.createElement('details');linha.className='panna-manutencao-linha';
+                const resumo=document.createElement('summary');resumo.className='panna-manutencao-linha-resumo';
+                const celula=(texto,classe)=>{const el=document.createElement('span');el.className=classe||'';el.textContent=texto;return el;};
+                resumo.append(celula(p.tipo||'Preventiva','panna-col-tipo'));
+                const insumos=Array.isArray(p.insumos)?p.insumos:[];
+                resumo.append(celula(insumos.length?insumos.map(x=>x.nome).filter(Boolean).join(', '):'—','panna-col-insumos'));
+                resumo.append(celula(p.periodicidade||'—','panna-col-periodo'));
+                resumo.append(celula(p.dataPrevista?dataBR(p.dataPrevista):'—','panna-col-data'));
+                const seta=document.createElement('span');seta.className='panna-linha-seta';seta.textContent='⌄';seta.setAttribute('aria-hidden','true');resumo.append(seta);
+                linha.append(resumo);
+                const detalhe=document.createElement('div');detalhe.className='panna-manutencao-linha-detalhes';
+                const grade=document.createElement('div');grade.className='panna-plano-grid';
+                pannaAdicionarCampo(grade,'Tipo de manutenção',p.tipo);
+                pannaAdicionarCampo(grade,'Periodicidade',p.periodicidade);
+                pannaAdicionarCampo(grade,'Próxima data prevista',dataBR(p.dataPrevista));
+                pannaAdicionarCampo(grade,'Aviso antecipado',p.avisoAntecipado);
+                detalhe.append(grade);
+                const titulo=document.createElement('strong');titulo.textContent='Insumos necessários';detalhe.append(titulo);
+                const ul=document.createElement('ul');
+                insumos.forEach(x=>{const li=document.createElement('li');li.textContent=x.nome+' — '+x.quantidade+' '+x.unidade;ul.append(li);});
+                if(!insumos.length){const li=document.createElement('li');li.textContent='Nenhum insumo cadastrado';ul.append(li);}
+                detalhe.append(ul);
+                const acoes=document.createElement('div');acoes.className='panna-manutencao-acoes panna-acoes-linha';
+                const realizar=botao('Registrar realização','panna-outline-btn panna-registrar-realizacao',()=>abrirRegistro(p));
+                const editar=botao('','panna-icone-acao panna-icone-editar',()=>abrir(p));
+                editar.innerHTML='<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L9 17l-4 1 1-4Z"/></svg>';
+                editar.title='Editar preventiva';editar.setAttribute('aria-label','Editar '+(p.tipo||'preventiva'));
+                const excluir=botao('','panna-icone-acao panna-icone-excluir',()=>{
+                    if(!confirm('Excluir a preventiva "'+(p.tipo||'')+'"?'))return;
+                    const dados=registroAtual();if(!dados)return;
+                    const restante=planosDoEquipamento(dados).filter((x,j)=>x.id!==p.id || (p.id==null && j!==i));
+                    if(gravar(restante)){fechar();atualizarDetalhes();}
+                });
+                // Ícone de lixeira SVG correto, sem depender de fontes ou bibliotecas externas.
+                excluir.innerHTML='<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18M8 6V4h8v2m3 0-1 14H6L5 6m5 4v7m4-7v7"/></svg>';
+                excluir.title='Excluir preventiva';excluir.setAttribute('aria-label','Excluir '+(p.tipo||'preventiva'));
+                acoes.append(realizar,editar,excluir);detalhe.append(acoes);linha.append(detalhe);area.append(linha);
+            });
+        }
+        novo.addEventListener('click',()=>abrir(null));
+        render();
+        return render;
+    }
     // GE2: utiliza sempre o registro atual do localStorage, inclusive após uma edição.
     function iniciarDetalhes() {
         const raiz = $('#panna-detalhes');
@@ -450,26 +668,31 @@
             const container = $(seletor);
             campos.forEach(([rotulo, valor]) => pannaAdicionarCampo(container, rotulo, valor));
         });
-        // ETAPA 5: detalhamento de N preventivas e seus N insumos, sem HTML interpolado.
+        // ETAPA 8: a aba Manutenção possui seu próprio editor, com salvamento imediato.
+        // A função abaixo atualiza os cartões e o indicador lateral após cada operação.
+        const atualizarPreventivas = () => location.reload();
+        iniciarGestaoPreventivas(item, atualizarPreventivas);
         const planos=planosDoEquipamento(item);
-        const area=$('#panna-campos-manutencao');
-        area.classList.add('panna-planos-detalhe');
-        area.replaceChildren();
-        if (!planos.length) {const p=document.createElement('p');p.textContent='Nenhuma preventiva cadastrada.';area.append(p);}
-        planos.forEach((plano,i)=>{
-            const card=document.createElement('article');card.className='panna-plano-resumo';
-            const h=document.createElement('h3');h.textContent=plano.tipo||'Preventiva';card.append(h);const etiqueta=document.createElement('span');etiqueta.className='panna-plano-etiqueta';etiqueta.textContent='Preventiva '+(i+1);card.append(etiqueta);
-            pannaAdicionarCampo(card,'Periodicidade',plano.periodicidade);
-            pannaAdicionarCampo(card,'Próxima data prevista',dataBR(plano.dataPrevista));
-            pannaAdicionarCampo(card,'Aviso antecipado',plano.avisoAntecipado);
-            const subt=document.createElement('strong');subt.textContent='Insumos';card.append(subt);
-            const ul=document.createElement('ul');
-            (plano.insumos||[]).forEach(insumo=>{const li=document.createElement('li');li.textContent=insumo.nome+' — '+insumo.quantidade+' '+(insumo.unidade||'');ul.append(li);});
-            if(!ul.children.length){const li=document.createElement('li');li.textContent='Nenhum insumo cadastrado';ul.append(li);}
-            card.append(ul);area.append(card);
+        // Abas reais: cada seção é exibida isoladamente, sem alterar o menu lateral.
+        const secoes={equipamento:$('#panna-detalhes'),manutencao:$('#panna-manutencao'),historico:$('#panna-historico-card')};
+        function selecionarAba(nome) {
+            if(!secoes[nome])nome='equipamento';
+            Object.entries(secoes).forEach(([chave,secao])=>secao.hidden=chave!==nome);
+            document.querySelectorAll('[data-panna-tab]').forEach(a=>{
+                const ativo=a.dataset.pannaTab===nome;
+                a.classList.toggle('panna-tab-active',ativo);
+                if(ativo)a.setAttribute('aria-current','page');else a.removeAttribute('aria-current');
+            });
+        }
+        document.querySelectorAll('[data-panna-tab]').forEach(a=>a.addEventListener('click',evento=>{
+            evento.preventDefault();const aba=a.dataset.pannaTab;
+            history.replaceState(null,'','#'+(aba==='manutencao'?'panna-manutencao':aba==='historico'?'panna-historico-card':'panna-detalhes'));
+            selecionarAba(aba);
+        }));
+        document.querySelector('[data-panna-abrir-manutencao]')?.addEventListener('click',evento=>{
+            evento.preventDefault();history.replaceState(null,'','#panna-manutencao');selecionarAba('manutencao');
         });
-        // ETAPA 7: a gestão das preventivas ficará na aba de Manutenções.
-        // Não exibimos mais o atalho de edição nesta área de detalhes.
+        selecionarAba(location.hash==='#panna-manutencao'?'manutencao':location.hash==='#panna-historico-card'?'historico':'equipamento');
         // Próxima preventiva: somente uma data cadastrada é exibida como agendada.
         // Nunca inventamos um agendamento a partir da periodicidade isolada.
         const datas = planos.map(p=>({plano:p,data:pannaLerData(p.dataPrevista)})).filter(x=>x.data).sort((a,b)=>a.data-b.data);
@@ -496,7 +719,7 @@
         $('#panna-qr-codigo').textContent = item.codigo;
         $('#panna-qr-nome').textContent = item.nome || 'Equipamento';
         // O histórico permanece vazio até a implementação dos registros de eventos.
-        $('#panna-historico').textContent = 'Ainda não há eventos registrados para este equipamento.';
+        renderizarHistoricoManutencoes(item.codigo);
     }
     document.addEventListener('DOMContentLoaded', () => {
         iniciarMenu(); iniciarOpcoesCadastro(); iniciarCadastro(); iniciarGerenciamento(); iniciarConfirmacao(); iniciarDetalhes();
