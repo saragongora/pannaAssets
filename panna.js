@@ -372,6 +372,30 @@
         return ({'Diária':1,'Semanal':7,'Quinzenal':15,'Mensal':30,'Bimestral':60,
             'Trimestral':90,'Semestral':180,'Anual':365})[valor] || null;
     }
+    // ETAPA 12 — Reagendamento por calendário, não por aproximações de 30/365 dias.
+    // Para meses sem o mesmo dia (ex.: 31/01 + 1 mês), usa o último dia do mês.
+    // O cálculo parte da data efetiva de realização e não modifica o histórico.
+    function pannaProximaDataPreventiva(dataExecucao, periodicidade) {
+        const inicio = pannaLerData(dataExecucao);
+        if (!inicio) return null;
+        const chave = String(periodicidade || '').trim().toLocaleLowerCase('pt-BR');
+        const dias = {'diária':1,'diario':1,'diário':1,'semanal':7,'quinzenal':15};
+        const meses = {'mensal':1,'bimestral':2,'trimestral':3,'quadrimestral':4,
+            'semestral':6,'anual':12};
+        let destino;
+        if (dias[chave]) {
+            destino = new Date(inicio.getFullYear(), inicio.getMonth(), inicio.getDate() + dias[chave]);
+        } else if (meses[chave]) {
+            const primeiro = new Date(inicio.getFullYear(), inicio.getMonth() + meses[chave], 1);
+            const ultimoDia = new Date(primeiro.getFullYear(), primeiro.getMonth() + 1, 0).getDate();
+            destino = new Date(primeiro.getFullYear(), primeiro.getMonth(), Math.min(inicio.getDate(), ultimoDia));
+        } else {
+            // Periodicidade não reconhecida: não cria previsão incorreta.
+            return null;
+        }
+        return [destino.getFullYear(), String(destino.getMonth()+1).padStart(2,'0'),
+            String(destino.getDate()).padStart(2,'0')].join('-');
+    }
     function pannaAdicionarCampo(container, rotulo, valor) {
         const div = document.createElement('div'); div.className = 'panna-detail-field';
         const label = document.createElement('span'); label.textContent = rotulo;
@@ -572,16 +596,43 @@
                     responsavel:responsavel.value.trim(),observacoes:observacoes.value.trim(),
                     insumos:insumos.map(x=>({nome:String(x.nome).trim(),quantidade:Number(x.quantidade),unidade:x.unidade})),
                     registradoEm:new Date().toISOString()};
+                // Busca o plano atual pelo ID, evitando sobrescrever outras alterações.
+                const planoAtual = (Array.isArray(e.planosPreventivos) ? e.planosPreventivos : [])
+                    .find(p => p.id === plano.id);
+                if (!planoAtual) {
+                    alert('Esta preventiva não existe mais. Atualize a página antes de registrar.');
+                    return;
+                }
+                const dataAnterior = planoAtual.dataPrevista || '';
+                const proximaData = pannaProximaDataPreventiva(registro.dataExecucao, planoAtual.periodicidade);
+                if (!proximaData && !confirm('Periodicidade não reconhecida. Registrar a realização sem reagendar automaticamente?')) return;
+                // A realização é preservada independentemente de um futuro ajuste no plano.
+                registro.dataPrevistaAnterior = dataAnterior;
+                registro.proximaDataPrevista = proximaData || null;
+                if (proximaData) planoAtual.dataPrevista = proximaData;
+                const datasAtualizadas = e.planosPreventivos.map(p => normalizarDataISO(p.dataPrevista))
+                    .filter(Boolean).sort();
+                e.proximaPreventiva = datasAtualizadas[0] || '';
                 e.historicoManutencoes=[...historicoManutencoes(e),registro];
                 registrarEvento(e,'manutencao','Manutenção preventiva realizada: '+registro.tipo,
                     'Responsável: '+registro.responsavel+(registro.observacoes?' · '+registro.observacoes:''));
                 e.eventos[e.eventos.length-1].execucaoId=registro.id;
                 e.eventos[e.eventos.length-1].dataRealizacao=registro.dataExecucao;
                 e.eventos[e.eventos.length-1].insumos=registro.insumos;
+                if (proximaData) {
+                    registrarEvento(e, 'preventiva', 'Próxima preventiva reagendada: ' + registro.tipo,
+                        'Previsão anterior: ' + (dataAnterior ? dataBR(dataAnterior) : 'não informada') +
+                        ' · Nova previsão: ' + dataBR(proximaData) +
+                        ' · Periodicidade: ' + planoAtual.periodicidade);
+                }
                 e.atualizadoEm=new Date().toISOString();
                 try{salvarEquipamentos(equipamentos);}catch(erro){alert('Não foi possível registrar a realização.');return;}
-                fechar();renderizarHistoricoManutencoes(item.codigo);
-                alert('Realização registrada no histórico. A próxima data prevista não foi alterada.');
+                fechar();
+                // Recarrega a tela para sincronizar a lista, o card lateral e a linha do tempo.
+                alert(proximaData
+                    ? 'Realização registrada! Próxima preventiva: ' + dataBR(proximaData) + '.'
+                    : 'Realização registrada no histórico. Reagendamento manual necessário.');
+                location.reload();
             }));
             editor.scrollIntoView({behavior:'smooth',block:'nearest'});
         }
