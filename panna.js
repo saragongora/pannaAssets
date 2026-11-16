@@ -319,7 +319,7 @@
                 for (const [classe,icone,rotulo] of [['edit','icon_edit.svg','Editar'],['enable-disable','icon_enable_disable.png','Ativar ou desativar'],['delete','icon_delete.svg','Excluir']]) {
                     const botao = document.createElement('button'); botao.type='button'; botao.className='equipament-table__'+classe;
                     botao.title = classe === 'edit' ? rotulo : rotulo + ' (funcionalidade futura)'; botao.setAttribute('aria-label',rotulo + ' ' + e.nome);
-                    const img=document.createElement('img'); img.src='assets/'+icone; img.alt=rotulo; img.width=20; botao.append(img);
+                    const img=document.createElement('img'); img.src='assets/'+icone; img.alt=rotulo; img.width=30; botao.append(img);
                     if (classe === 'edit') botao.addEventListener('click', () => location.href = 'CE1.html?editar=' + encodeURIComponent(e.codigo));
                     grupo.append(botao);
                 }

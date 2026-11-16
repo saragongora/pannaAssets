@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Panna Equipamentos</title>
+  <link rel="icon" href="assets/logo_group.png" type="image/png">
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"
+    integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r"
+    crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.9/dist/js/bootstrap.min.js"
+    integrity="sha384-89aa4glufciPv46aKltztWQEmk+Tu9W2RhzXr6VcnUUEub7F8+06RcL2RYLCOHUq"
+    crossorigin="anonymous"></script>
+  <link rel="stylesheet" href="styles.css">
+  <script src="https://cloudflare.com" defer></script>
+</head>
+
+
+<body class="page page--home">
+    <header>
+       <nav class="navbar">
+            <ul class="navbar__list">
+                <li><button type="button" class="navbar__btn-menu" id="toggle-sidebar" aria-label="Mostrar ou ocultar menu lateral" aria-expanded="true"><img src="assets/btn_menu.svg" alt="botao menu"></button></li>
+                <li class="navbar__item"><img class="navbar__logo" id="navbar-logo" src="assets/logo_group.png"></li>
+            </ul>    
+        </nav>
+    </header>
+
+     <main class="main-content main-content--field">
+        <h1 class="title-h1">Ler QR Code</h1>
+        <h3 class="title-h3">Aponte a câmera para o QR Code do equipamento.</h3>
+
+        <div class="form-card--qrcode form-card--field">    
+            <div class="register-form__finish register-form__finish--centered">
+                        <img src="assets/icon_scanner.svg" alt="Icone de leitura de QR Code" class="register-form__qr-code">
+            </div>           
+
+            <div class="field-qr">
+            <p class="title-h3 field-qr__or">ou</p>
+            <label class="field-qr__label" for="equipment-code">CÓDIGO DO EQUIPAMENTO</label>
+            <input type="text" name="equipment-code" class="register-form__input input_select" id="equipment-code" placeholder="Adicionar código">    
+            </div>    
+        </div>
+    </main> 
+<script src="equipamentos-iniciais.js"></script>
+<script src="panna-integracao.js"></script>
+</body>
+</html>

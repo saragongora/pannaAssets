@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Panna Equipamentos</title>
+  <link rel="icon" href="assets/logo_group.png" type="image/png">
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"
+    integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r"
+    crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.9/dist/js/bootstrap.min.js"
+    integrity="sha384-89aa4glufciPv46aKltztWQEmk+Tu9W2RhzXr6VcnUUEub7F8+06RcL2RYLCOHUq"
+    crossorigin="anonymous"></script>
+  <link rel="stylesheet" href="styles.css">
+  <script src="https://cloudflare.com" defer></script>
+</head>
+
+
+<body class="page page--home">
+    <header>
+       <nav class="navbar">
+            <ul class="navbar__list">
+                <li><button type="button" class="navbar__btn-menu" id="toggle-sidebar" aria-label="Mostrar ou ocultar menu lateral" aria-expanded="true"><img src="assets/btn_menu.svg" alt="botao menu"></button></li>
+                <li class="navbar__item"><img class="navbar__logo" id="navbar-logo" src="assets/logo_group.png"></li>
+            </ul>    
+        </nav>
+    </header>
+
+     <main class="main-content main-content--field">
+        <h1 class="title-h1">Registrar avaria</h1>
+        <h3 class="title-h3">Informe a falha e se o equipamento segue em uso.</h3>
+
+        <div class="form-card--qrcode form-card--field">    
+            <h2 class="title-h2 field-form__name">Aspirador de pó industrial</h2>
+        <h3 class="title-h3 field-form__code">EQP-00185538</h3>          
+
+        <div class="form-group field-form__group">
+        <label class="title-h4" for="breakdown-type">TIPO DE AVARIA</label>
+        <select class="register-form__input input_select form-select" id="breakdown-type">
+            <option value="">Selecione</option>
+        </select>        
+    </div>
+
+    <div class="form-group field-form__group">
+        <span class="title-h4">É POSSÍVEL CONTINUAR USANDO?</span>
+            <div class="field-form__options">
+            <label for="yes-answer">
+                <input type="radio" id="yes-answer" name="answer" value="yes" checked>
+                     Sim
+            </label>
+
+            <label for="no-answer">
+                <input type="radio" id="no-answer" name="answer" value="no">
+                     Não
+            </label>
+            </div> 
+            </div>   
+        <div class="field-form__group form-group">
+        <label class="title-h4" for="breakdown-comment">COMENTÁRIO</label>
+        <textarea class="register-form__input input_select field-form__textarea" placeholder="Descreva a avaria" name="breakdown-comment" id="breakdown-comment"></textarea>
+        </div>   
+       
+
+        <div class="register-form__upload field-form__group">
+            <button type="button" class="register-form__upload-button" id="photo-upload">
+                <img src="assets/icon_camera.png" alt="Anexar" width="18">
+            </button>
+            <input class="register-form__input-upload" type="text" id="breakdown-photo" placeholder="Adicionar foto" readonly>
+        </div>
+
+        <div class="register-form__actions">
+        <button type="button" class="button--cancel field-form__btn" onclick="window.location.href = 'OC1-MOBILE.html'">Cancelar</button>
+        <button type="button" class="button--register-equip field-form__btn" id="submit-fault">Registrar avaria</button>
+        </div>
+
+    </div>
+    </main> 
+<script src="equipamentos-iniciais.js"></script>
+<script src="panna-integracao.js"></script>
+</body>
+</html>

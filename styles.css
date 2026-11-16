@@ -195,6 +195,18 @@ p {
   display: block; /* Remove um espaço em branco fantasma que navegadores colocam sob imagens */
 }
 
+/*-----DEIXAR LOGIN RESPONSIVO-----*/
+@media (max-width: 768px) { /* só vale em telas com até 768px de largura (tablet e celular) */
+  .login {width: 100%;} /* troca o 100vw por 100% para evitar rolagem horizontal */
+  .art-login {display: none;} /* esconde a imagem lateral no celular */
+  .login__card {width: 100%; padding: 24px;} /* cartão ocupa a largura toda (era 597px) e margem interna menor (era 60px) */
+  .logo-panna {margin-bottom: 32px;} /* espaço menor abaixo da logo (era 60px) */
+  .login__input {width: 100%} /* campos acompanham a largura do cartão (era 477px fixo) */
+  .login__enter, .login__exit {width: 100%;} /* botões acompanham a largura do cartão (era 467px fixo) */
+}
+
+
+
 /* ------------- 4. NAVEGAÇÃO SUPERIOR (NAVBAR) -------------- */
 .navbar {
   position: fixed !important; /* Trava a barra amarela no topo da tela */
@@ -209,6 +221,7 @@ p {
 
 .navbar__list {
   width: 100%;
+  height: 100%;
   display: flex;
   flex-direction: row;
   justify-content: flex-start;
@@ -331,7 +344,7 @@ p {
   width: 100%;
 }
 
-.register-form__input, .equipment-table__header-allsituation {
+.register-form__input, .equipment-table__header-allsituation, textarea {
   width: 100%; /* Garante que o campo preencha toda a largura da coluna */
   height: 42px;
   border-radius: 8px;
@@ -682,9 +695,10 @@ padding: 4px 12px;
 border-radius: 20px;
 font-size: 0.75rem; /* Equivalente aos 12px do Figma (12÷16) */
 font-weight: bolder;
+white-space: nowrap; /*o texto nunca quebra, e a bolinha do status e a palavra ficam sempre na mesma linha*/
 }
 
-.functioning{
+.functioning, .completed{
   background-color:#DCEFDC;
   color:#226C3E ;
 }
@@ -709,6 +723,11 @@ font-weight: bolder;
   border: none;  
 }
 
+.equipament-table__enable-disable img {
+  width: 16px;
+  height: 16px;
+}
+
  .equipment-table__several{
   color: #77737B;
  }
@@ -724,6 +743,12 @@ font-weight: bolder;
 
    .equipment-table__status-color-maroon{
     color: #B45309;
+    margin: 0;
+  }
+
+  
+   .equipment-table__status-color-blue{
+    color: #4A86C0;
     margin: 0;
   }
    
@@ -896,3 +921,174 @@ body.sidebar-collapsed .main-content { margin-left: 0; width: 100%; }
 .panna-evento-ponto{width:10px;height:10px;border-radius:50%;background:#64748b;margin-top:5px;z-index:1}
 .panna-evento-cadastro{background:#218553}.panna-evento-status{background:#b45309}.panna-evento-manutencao{background:#15803d}.panna-evento-preventiva{background:#2563a0}.panna-evento-edicao{background:#64748b}
 .panna-evento-corpo{padding-bottom:22px;min-width:0}.panna-evento-corpo strong{display:block;font-size:.92rem;color:#202020}.panna-evento-corpo p{font-size:.85rem;color:#59616b;margin:5px 0}.panna-evento-corpo time{display:block;font-size:.78rem;color:#77808a;margin-top:5px}.panna-evento-corpo details{font-size:.83rem;margin-top:8px}.panna-evento-corpo summary{cursor:pointer}.panna-evento-corpo ul{padding-left:20px;margin:6px 0}
+
+/* ------------- TELA OPERAÇÃO EM CAMPO (MOBILE) -------------- */
+.main-content--field{
+  margin: 0 auto; /*tira o tira os 242px da sidebar e centraliza*/
+  width: 100%; /*ocupa a largura toda*/
+  padding-top: 82px; /*66px da navbar + 16px de respiro*/
+  max-width: 480px; /*evita esticar a tela grande*/
+ }
+
+.export-item--field{
+  height: 64px;
+ 
+}
+
+.field-actions{
+  display: flex;
+  flex-direction: column;
+  gap:12px;
+}
+
+.export-item--field:hover, .export-item--field:active{
+  background-color: #FFD500;
+  border-color: #E2BC00;
+ }
+
+.export-item--field:hover .action-btn, .export-item--field:active .action-btn {
+  font-weight: 700;
+}
+
+.field-qr__label{
+  color: #5A585E;
+  font-size: 0.68rem;
+  font-weight: bold;
+  display: block;
+  margin-bottom: 6px;
+  
+}
+
+.form-card--field{
+  width: 100%;
+  padding: 16px;
+}
+  
+.field-qr__or{
+  text-align: center;
+  margin-bottom: 16px;  
+  margin-right: 0;
+  margin-left: 0;
+}
+
+.register-form__finish--centered{
+  justify-content: center;
+  margin: 24px 0 8px;
+}
+
+
+
+.field-form__textarea {
+  height: 100px;
+  padding: 12px 14px;
+  resize: none; /*;o usuário não consegue arrastar o cantinho e bagunçar o layout*/
+  display:block;
+}
+
+.field-form__group{
+  margin-top: 20px;
+}
+
+.field-form__btn{
+  flex: 1;
+}
+
+.field-form__code{
+  margin: 0 0 8px;
+}
+
+.field-form__options{
+  display: flex;
+  gap: 20px;
+  accent-color: #1A1A1A;
+  
+}
+
+.field-form__name{
+  margin: 10px 0 4px;
+}
+
+/* ------------- TELA TRANSFERENCIA TE1-------------- */
+.urgent{
+  background-color:#FAEAE8;
+  color:#A83C32 ;
+}
+
+.normal, .cancelled{
+  background-color:#EEEEEB;
+  color:#65655F;
+}
+
+.in-motion{
+  background-color:#E9F2FA;
+  color:#2B608E;
+}
+
+.pending{
+  background-color:#FBF2E2;
+  color:#986119 ;
+
+}
+
+.transfer-table__code{
+    color: #77737B;
+    white-space: nowrap;
+}
+
+/* ETAPA 14 — estilos isolados da área do operador e dos chamados. */
+.panna-op-menu{position:fixed;z-index:30;top:45px;left:0;width:220px;max-width:80vw;background:white;border:1px solid #ddd;border-radius:0 0 12px 0;box-shadow:0 6px 20px #0002;padding:14px;display:flex;flex-direction:column;gap:8px}
+.panna-op-menu a,.panna-op-menu button{display:block;color:#222;text-align:left;text-decoration:none;border:0;background:#f7f7f5;border-radius:8px;padding:12px;cursor:pointer;font:inherit}
+.panna-op-menu a:hover,.panna-op-menu button:hover{background:#ffdc00}
+body.panna-op-collapsed .panna-op-menu{display:none}
+.panna-op-continue{margin-top:14px;padding:12px 24px;border:0;border-radius:8px;background:#ffd400;cursor:pointer;width:100%}
+.panna-op-hint{font-size:13px;color:#ad2929;margin:8px 0}
+.panna-maint-page{padding:28px;max-width:1200px;margin:auto;width:100%}
+.panna-maint-heading{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:22px}
+.panna-maint-heading h1{font-size:28px;margin:4px 0}.panna-maint-heading small{letter-spacing:1px;color:#777}
+.panna-maint-heading nav{display:flex;gap:8px}.panna-maint-heading nav a{border:1px solid #ddd;border-radius:8px;padding:10px;text-decoration:none;color:#222;background:#fff}
+.panna-maint-item{background:#fff;border:1px solid #ddd;border-radius:12px;padding:18px;margin:10px 0}
+.panna-maint-item h3{font-size:17px;margin:0 0 8px}.panna-maint-item p{margin:5px 0;color:#555;font-size:14px}
+.panna-maint-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}.panna-maint-actions button{border:1px solid #333;background:#fff;border-radius:7px;padding:9px 13px;cursor:pointer}.panna-maint-actions button:first-child{background:#ffd400;border-color:#ffd400}
+.panna-maint-subtitle{font-size:19px;margin-top:30px}
+@media(max-width:650px){.panna-maint-page{padding:16px}.panna-maint-heading h1{font-size:23px}}
+
+/* ETAPA 15 — Somente complementos visuais. O CSS original permanece intacto. */
+/* Menu lateral do operador no mesmo padrão do administrador. */
+.panna-op-menu{position:fixed;top:45px;bottom:0;left:0;width:236px;max-width:85vw;z-index:25;background:#fff;border-right:1px solid #dededb;border-radius:0;box-shadow:none;padding:22px 12px 12px;display:flex;flex-direction:column;justify-content:space-between;gap:0}
+.panna-op-links{display:flex;flex-direction:column;gap:7px}.panna-op-links a{display:flex;align-items:center;gap:12px;border-radius:9px;padding:13px 12px;background:transparent;text-decoration:none;color:#292929;font-weight:600;font-size:13px}.panna-op-links a img{width:19px;height:19px;object-fit:contain}.panna-op-links a:hover,.panna-op-links a.is-active{background:#ffd400;color:#111}
+.panna-op-footer{border-top:1px solid #e5e5e5;padding:12px 2px;display:flex;align-items:center;gap:8px;font-size:12px;font-weight:700}.panna-op-footer img{width:32px;height:32px;object-fit:contain}.panna-op-footer span{flex:1}.panna-op-footer small{display:block;font-size:10px;font-weight:400;color:#777}.panna-op-footer button{border:0;background:transparent;color:#a33838;cursor:pointer;font-weight:700}
+body:not(.panna-op-collapsed) .main-content--field{margin-left:236px;max-width:calc(100% - 236px)}body.panna-op-collapsed .panna-op-menu{display:none}body.panna-op-collapsed .main-content--field{margin-left:0}
+@media(max-width:700px){.panna-op-menu{box-shadow:5px 8px 22px #0002}.main-content--field{margin-left:0!important;max-width:100%!important}}
+/* Dropdown administrativo. */
+.panna-maint-menu{display:block!important}.panna-maint-toggle{width:100%;display:flex!important;align-items:center;gap:12px}.panna-maint-toggle.panna-maint-active{background:#ffd400}.panna-menu-chevron{margin-left:auto;font-size:18px}.panna-maint-submenu{padding:5px 0 7px 32px}.panna-maint-submenu[hidden]{display:none}.panna-maint-submenu a{display:block;padding:10px 8px;border-radius:7px;font-size:12px;text-decoration:none;color:#444}.panna-maint-submenu a:hover,.panna-maint-submenu a.active{background:#fff0a5;color:#171717;font-weight:700}
+/* Lista de chamados baseada no layout de referência. */
+.panna-requests{max-width:none;padding:32px 36px}.panna-outline-btn{border:1px solid #222;border-radius:9px;background:#fff;color:#222;padding:11px 16px;text-decoration:none;font-size:12px;font-weight:700}.panna-request-stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-bottom:14px}.panna-request-stats article{border:1px solid #dededb;border-radius:13px;background:#fff;padding:17px;min-height:105px;display:flex;flex-direction:column;gap:5px}.panna-request-stats article:first-child{border-color:#e6bb00}.panna-request-stats small{font-size:11px;color:#777}.panna-request-stats strong{font-size:28px;line-height:1.1}.panna-request-stats span{font-size:10px;color:#888}
+.panna-request-panel{background:#fff;border:1px solid #ddd;border-radius:14px;overflow:hidden}.panna-request-toolbar{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:18px}.panna-request-toolbar h2{font-size:16px;margin:0}.panna-request-toolbar small{color:#777;font-size:11px}.panna-request-toolbar>div:last-child{display:flex;gap:8px}.panna-request-toolbar input,.panna-request-toolbar select{background:#f8f8f7;border:1px solid #ddd;border-radius:9px;padding:11px;font:inherit;font-size:12px;min-width:145px}.panna-request-scroll{overflow-x:auto}.panna-request-table{border-collapse:collapse;width:100%;font-size:12px;text-align:left}.panna-request-table th{background:#f8f8f7;color:#777;font-size:10px;letter-spacing:.035em;padding:14px 12px}.panna-request-table td{padding:17px 12px;border-top:1px solid #eee}.panna-request-table tbody tr{cursor:pointer}.panna-request-table tbody tr:hover{background:#fffbea}.panna-request-table td strong{font-weight:700}.panna-request-table td small{display:block;color:#999;margin-top:3px}.panna-row-action{border:0;background:transparent;text-decoration:underline;cursor:pointer;font-size:11px}.panna-no-requests{text-align:center;color:#888}
+.panna-priority{display:inline-block;border-radius:30px;background:#fdf2df;color:#9b6211;padding:6px 11px;font-size:11px;font-weight:700}.panna-priority.urgente,.panna-priority.alta{background:#fce8e8;color:#b72e2e}.panna-priority.baixa{background:#e6f5eb;color:#287c4c}
+/* Modal de aceite/recusa. */
+.panna-modal-backdrop{position:fixed;inset:0;background:#0008;z-index:100;display:flex;align-items:center;justify-content:center;padding:20px}.panna-modal-backdrop[hidden]{display:none}.panna-request-dialog{position:relative;width:min(480px,100%);min-height:390px;display:flex;flex-direction:column;background:#fff;border-radius:15px;padding:25px;box-shadow:0 4px 0 #1b2140}.panna-request-dialog h2{font-size:20px;margin:0 0 4px}.panna-request-dialog>p{font-size:12px;color:#777;margin:0 0 12px}.panna-request-dialog>.panna-priority{align-self:flex-start;margin-bottom:18px}.panna-dialog-close{position:absolute;right:16px;top:12px;border:0;background:transparent;font-size:24px;cursor:pointer}.panna-dialog-fields{display:grid;grid-template-columns:1fr 1fr;gap:12px}.panna-dialog-fields label{font-size:10px;font-weight:800;color:#6b6b6b}.panna-dialog-fields label:first-child,.panna-dialog-fields .panna-field-wide{grid-column:1/-1}.panna-dialog-fields label div{font-size:13px;font-weight:400;color:#333;background:#f7f7f7;border:1px solid #ddd;border-radius:8px;padding:10px;margin-top:5px;min-height:37px;overflow-wrap:anywhere}.panna-dialog-actions{display:flex;gap:9px;justify-content:flex-end;margin-top:auto;padding-top:30px}.panna-dialog-actions button{border:1px solid #222;border-radius:9px;background:#fff;padding:11px 17px;font-weight:700;cursor:pointer}.panna-dialog-actions button:last-child{background:#ffd400;border-color:#ffd400}.panna-maint-empty{border:1px dashed #ddd;background:#fff;border-radius:12px;padding:45px;text-align:center;color:#888}
+@media(max-width:900px){.panna-request-stats{grid-template-columns:repeat(2,minmax(0,1fr))}.panna-requests{padding:18px}}@media(max-width:560px){.panna-request-toolbar{align-items:stretch;flex-direction:column}.panna-request-toolbar>div:last-child{flex-direction:column}.panna-request-stats{gap:7px}.panna-request-stats article{padding:12px}.panna-dialog-fields{grid-template-columns:1fr}.panna-dialog-fields label{grid-column:1/-1}}
+
+/* ETAPA 16: indicadores clicáveis com aparência dos cartões anteriores. */
+.panna-request-stats .panna-stat{font:inherit;text-align:left;cursor:pointer;border:1px solid #dededb;border-radius:13px;background:#fff;padding:17px;min-height:105px;display:flex;flex-direction:column;gap:5px;color:inherit}.panna-request-stats .panna-stat.is-active{border-color:#e6bb00;box-shadow:inset 0 0 0 1px #e6bb00}.panna-request-stats .panna-stat:hover{background:#fffdf2}.panna-request-stats .panna-stat:focus-visible{outline:3px solid #d7a700;outline-offset:2px}.panna-request-stats .panna-stat small{font-size:11px;color:#777}.panna-request-stats .panna-stat strong{font-size:28px;line-height:1.1}.panna-request-stats .panna-stat span{font-size:10px;color:#888}.panna-dialog-status{font-size:12px;color:#555;margin:0 0 12px}.panna-dialog-actions button[hidden]{display:none}@media(max-width:560px){.panna-request-stats .panna-stat{padding:12px}}
+
+/* ETAPA 17 — ajustes isolados para solicitações de manutenção em telas pequenas. */
+.panna-requests,.panna-request-panel,.panna-request-toolbar,.panna-request-scroll{min-width:0;box-sizing:border-box}
+.panna-request-toolbar>div:last-child{min-width:0;flex-wrap:wrap}
+.panna-request-toolbar input{min-width:0;flex:1 1 180px}
+.panna-request-toolbar select{min-width:0;flex:1 1 160px}
+.panna-request-table{min-width:880px}
+.panna-request-status{display:inline-block;white-space:nowrap;font-size:11px;font-weight:600}
+@media(max-width:760px){
+ .panna-requests{padding:16px 12px;width:100%;max-width:100%;overflow:hidden}
+ .panna-maint-heading{display:flex;flex-wrap:wrap;gap:12px;align-items:flex-start}
+ .panna-maint-heading h1{font-size:clamp(21px,5vw,28px);line-height:1.2}
+ .panna-request-stats{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+ .panna-request-stats .panna-stat{min-width:0;padding:12px;min-height:92px}
+ .panna-request-stats .panna-stat span{overflow-wrap:anywhere}
+ .panna-request-toolbar{padding:14px;gap:12px}
+ .panna-request-scroll{max-width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch}
+ .panna-request-dialog{width:min(480px,100%);max-height:calc(100dvh - 28px);min-height:0;overflow-y:auto;padding:20px}
+ .panna-modal-backdrop{padding:14px}
+}
+@media(max-width:420px){.panna-request-toolbar>div:last-child{width:100%}.panna-request-toolbar input,.panna-request-toolbar select{flex:1 1 100%;width:100%}.panna-dialog-actions{padding-top:18px}.panna-dialog-actions button{flex:1}}
