@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Regras e alertas de preventiva · Panna Equipamentos</title>
+    <link rel="icon" href="assets/logo_group.png" type="image/png">
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.9/dist/js/bootstrap.min.js" integrity="sha384-89aa4glufciPv46aKltztWQEmk+Tu9W2RhzXr6VcnUUEub7F8+06RcL2RYLCOHUq" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body class="page page--maintenance">
+    <header>
+        <nav class="navbar">
+            <ul class="navbar__list">
+                <li><button type="button" class="navbar__btn-menu" id="toggle-sidebar" aria-label="Mostrar ou ocultar menu lateral" aria-expanded="true"><img src="assets/btn_menu.svg" alt="botao menu"></button></li>
+                <li class="navbar__item"><img class="navbar__logo" id="navbar-logo" src="assets/logo_group.png" alt="Grupo Panna"></li>
+                <li class="navbar__item" id="navbar-manage-equipment"> • Gestão interna</li>
+            </ul>
+        </nav>
+    </header>
+
+    <div class="layout-container">
+        <div class="sidebar" id="side-menu">
+            <ul>
+                <li class="sidebar__buttons"><button type="button" class="navbar__btn-menu" onclick="window.location.href ='CE1.html'"><img src="assets/icon_file.svg" alt="botao menu">Cadastrar Equipamentos</button></li>
+                <li class="sidebar__buttons"><button type="button" class="navbar__btn-menu" onclick="window.location.href ='GE1.html'"><img src="assets/icon_box.svg" alt="botao menu">Gerenciar Equipamentos</button></li>
+                <li class="sidebar__buttons"><button type="button" class="navbar__btn-menu" onclick="window.location.href ='TE1.html'"><img src="assets/icon_truck.svg" alt="botao menu">Transferir</button></li>
+                <li class="sidebar__buttons"><button type="button" class="navbar__btn-menu" onclick="window.location.href ='#'"><img src="assets/icon_maintenance.png" alt="botao menu" style="width: 20px; height: 20px;">Manutenção</button></li>
+                <li class="sidebar__buttons"><button type="button" class="navbar__btn-menu" onclick="window.location.href ='#'"><img src="assets/icon_report.png" alt="botao menu" style="width: 20px; height: 20px;">Relatórios</button></li>
+            </ul>
+
+            <footer class="footer_sidebar">
+                <button type="button" class="navbar__btn-menu" onclick="window.location.href = 'index.html'">
+                    <img src="assets/logo_profile.svg" alt="botao menu">
+                </button>
+            </footer>
+        </div>
+
+        <main class="main-content">
+            <header class="screen__header">
+                <div>
+                    <p class="screen__eyebrow">OPERAÇÕES / MANUTENÇÃO</p>
+                    <h1 class="title-h1">Regras e alertas de preventiva</h1>
+                    <h3 class="title-h3">Defina o intervalo de manutenção por grupo e quando avisar a equipe.</h3>
+                </div>
+                <button type="button" class="panna-yellow-btn screen__action" id="rule-new">+ Nova regra</button>
+            </header>
+            <div class="rules-layout">
+                <div class="rules-layout__main">
+                    <section class="panel">
+                        <h2 class="panel__title">Regras por grupo de equipamentos</h2>
+                        <p class="panel__subtitle" id="rules-count"></p>
+                        <table class="rules-table">
+                            <thead class="rules-table__head">
+                                <tr>
+                                    <th class="rules-table__th">Grupo</th>
+                                    <th class="rules-table__th">Intervalo</th>
+                                    <th class="rules-table__th">Aviso antecipado</th>
+                                    <th class="rules-table__th">Equip.</th>
+                                    <th class="rules-table__th"><span class="visually-hidden">Ações</span></th>
+                                </tr>
+                            </thead>
+                            <tbody class="rules-table__body" id="rules-body"></tbody>
+                        </table>
+                    </section>
+
+                    <section class="panel">
+                        <h2 class="panel__title">Exceção por equipamento</h2>
+                        <div class="exception-form">
+                            <div class="form-group">
+                                <label class="title-h4" for="exc-equip">EQUIPAMENTO</label>
+                                <select class="register-form__input input_select" id="exc-equip"></select>
+                            </div>
+                            <div class="form-group">
+                                <label class="title-h4" for="exc-interval">INTERVALO PRÓPRIO</label>
+                                <select class="register-form__input input_select" id="exc-interval"></select>
+                            </div>
+                            <button type="button" class="button--register-equip maintenance-form__button" id="exc-save">Salvar</button>
+                            <p class="exception-form__status" id="exc-status" role="status"></p>
+                        </div>
+                    </section>
+                </div>
+
+                <div class="rules-layout__aside">
+                    <section class="panel">
+                        <h2 class="panel__title" id="alerts-title">Alertas</h2>
+                        <div id="alerts-list"></div>
+                    </section>
+
+                    <section class="panel">
+                        <h2 class="panel__title">Como avisar</h2>
+                        <label class="switch-list__item" for="sw-sistema">Alerta no sistema (sino)<input class="switch" type="checkbox" role="switch" id="sw-sistema"></label>
+                        <label class="switch-list__item" for="sw-email">E-mail ao responsável<input class="switch" type="checkbox" role="switch" id="sw-email"></label>
+                        <label class="switch-list__item" for="sw-app">Notificação no aplicativo<input class="switch" type="checkbox" role="switch" id="sw-app"></label>
+                    </section>
+                </div>
+            </div>
+
+            <dialog class="rule-dialog" id="rule-dialog" aria-labelledby="rule-dialog-title">
+                <h2 class="rule-dialog__title" id="rule-dialog-title">Nova regra</h2>
+                <div class="rule-dialog__fields">
+                    <div class="form-group">
+                        <label class="title-h4" for="rule-group">GRUPO DE EQUIPAMENTOS</label>
+                        <input class="register-form__input" type="text" id="rule-group" autocomplete="off">
+                    </div>
+                    <div class="form-group">
+                        <label class="title-h4" for="rule-months">INTERVALO</label>
+                        <select class="register-form__input input_select" id="rule-months"></select>
+                    </div>
+                    <div class="form-group">
+                        <label class="title-h4" for="rule-notice">AVISO ANTECIPADO</label>
+                        <select class="register-form__input input_select" id="rule-notice">
+                            <option value="30 / 15 / 7">30 / 15 / 7 dias</option>
+                            <option value="15 / 7">15 / 7 dias</option>
+                            <option value="7">7 dias</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="rule-dialog__actions">
+                    <button type="button" class="button--cancel maintenance-form__button" id="rule-cancel">Cancelar</button>
+                    <button type="button" class="button--register-equip maintenance-form__button" id="rule-save">Salvar</button>
+                </div>
+            </dialog>
+        </main>
+    </div>
+
+    <!-- JavaScript compartilhado: menu, armazenamento e telas de manutenção. -->
+    <script src="equipamentos-iniciais.js"></script>
+    <script src="panna.js"></script>
+    <script src="panna-integracao.js"></script>
+</body>
+</html>

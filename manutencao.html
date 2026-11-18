@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Chamados de manutenção · Grupo Panna</title>
+
+  <!-- Fonte -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Estilos -->
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+  <!-- ===== Barra superior ===== -->
+  <header class="topbar">
+    <div class="topbar__left">
+      <button class="menu-toggle" id="menu-toggle" type="button" aria-label="Abrir menu" aria-expanded="false" aria-controls="sidebar" tabindex="-1">
+        <svg class="menu-toggle__icon" width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="#141414" stroke-width="1.6" stroke-linecap="round">
+          <path d="M1 3h12M1 7h12M1 11h12"/>
+        </svg>
+      </button>
+
+      <div class="logo">
+        <div class="logo__mark">P</div>
+        GRUPO <span class="logo__name">PANNA</span>
+      </div>
+    </div>
+
+    <div class="topbar__right">
+      <span class="topbar__dot"></span>
+      Gestão interna
+    </div>
+  </header>
+
+  <div class="layout">
+
+    <!-- ===== Menu lateral ===== -->
+    <aside class="sidebar" id="sidebar">
+      <ul class="nav">
+        <li class="nav__item">
+          <a class="nav__link" href="#">
+            <svg class="nav__icon" viewBox="0 0 16 16">
+              <path d="M4 1.5h5.5L12.5 4.5v10h-8.5z"/>
+              <path d="M9 1.5v3.5h3.5M6 9h4M8 7v4"/>
+            </svg>
+            <span class="nav__label">Cadastrar equipamento</span>
+          </a>
+        </li>
+        <li class="nav__item">
+          <a class="nav__link" href="#">
+            <svg class="nav__icon" viewBox="0 0 16 16">
+              <path d="M8 1.5l6 3v7l-6 3-6-3v-7z"/>
+              <path d="M2 4.5l6 3 6-3M8 7.5v7"/>
+            </svg>
+            <span class="nav__label">Gerenciar equipamento</span>
+          </a>
+        </li>
+        <li class="nav__item">
+          <a class="nav__link" href="#">
+            <svg class="nav__icon" viewBox="0 0 16 16">
+              <path d="M1.5 3.5h7v7h-7zM8.5 6h3l2 2.5v2h-5"/>
+              <circle cx="4.5" cy="11.5" r="1.2"/>
+              <circle cx="11" cy="11.5" r="1.2"/>
+            </svg>
+            <span class="nav__label">Transferir</span>
+          </a>
+        </li>
+        <li class="nav__item">
+          <a class="nav__link nav__link--active" href="#" aria-current="page">
+            <svg class="nav__icon" viewBox="0 0 16 16">
+              <path d="M10.5 2a3.5 3.5 0 0 0-3 5L2 12.5 3.5 14 9 8.5a3.5 3.5 0 0 0 5-3l-2 2-2-.5-.5-2 2-2z"/>
+            </svg>
+            <span class="nav__label">Manutenção</span>
+          </a>
+        </li>
+        <li class="nav__item">
+          <a class="nav__link" href="#">
+            <svg class="nav__icon" viewBox="0 0 16 16">
+              <path d="M2 14h12M4 14V8M8 14V4M12 14v-4"/>
+            </svg>
+            <span class="nav__label">Relatórios</span>
+          </a>
+        </li>
+      </ul>
+
+      <div class="user">
+        <div class="user__avatar">GP</div>
+
+        <div class="user__info">
+          <b class="user__name">Grupo Panna</b>
+          <small class="user__role">Administrador</small>
+        </div>
+
+        <button class="user__logout" type="button">
+          <svg class="user__logout-icon" viewBox="0 0 12 12" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M5 1.5H2v9h3M5 6h5M8 4l2 2-2 2"/>
+          </svg>
+          SAIR
+        </button>
+      </div>
+    </aside>
+
+    <!-- Fundo escurecido que aparece atrás do menu no celular -->
+    <div class="overlay" id="overlay"></div>
+
+    <!-- ===== Conteúdo principal ===== -->
+    <main class="page">
+
+      <div class="page__header">
+        <div>
+          <div class="page__breadcrumb">Operações / Manutenção</div>
+          <h1 class="page__title">Chamados de manutenção</h1>
+          <p class="page__subtitle">Analise as solicitações abertas e defina quais serão aceitas.</p>
+        </div>
+
+        <button class="btn btn--outline page__action" type="button" id="pendentes">Ver pendentes</button>
+      </div>
+
+      <!-- Cards de resumo (clicáveis: filtram a tabela) -->
+      <section class="stats" aria-label="Resumo">
+        <button class="stat-card stat-card--selected" type="button" data-filter="todos" aria-pressed="true">
+          <div class="stat-card__label">Total de chamados</div>
+          <div class="stat-card__value" id="n-total">10</div>
+          <div class="stat-card__hint"><span class="stat-card__dot stat-card__dot--green"></span>Total cadastrado</div>
+        </button>
+
+        <button class="stat-card" type="button" data-filter="urgentes" aria-pressed="false">
+          <div class="stat-card__label">Urgentes</div>
+          <div class="stat-card__value" id="n-urg">3</div>
+          <div class="stat-card__hint"><span class="stat-card__dot stat-card__dot--red"></span>Clique para filtrar</div>
+        </button>
+
+        <button class="stat-card" type="button" data-filter="atrasados" aria-pressed="false">
+          <div class="stat-card__label">Atrasados</div>
+          <div class="stat-card__value" id="n-atr">2</div>
+          <div class="stat-card__hint"><span class="stat-card__dot stat-card__dot--orange"></span>Clique para filtrar</div>
+        </button>
+
+        <button class="stat-card" type="button" data-filter="semana" aria-pressed="false">
+          <div class="stat-card__label">Vencem em 7 dias</div>
+          <div class="stat-card__value" id="n-sem">4</div>
+          <div class="stat-card__hint"><span class="stat-card__dot stat-card__dot--blue"></span>Clique para filtrar</div>
+        </button>
+      </section>
+
+      <!-- Tabela de chamados -->
+      <section class="card">
+        <div class="card__header">
+          <div>
+            <h2 class="card__title">Chamados abertos</h2>
+            <p class="card__subtitle" id="count">7 registros encontrados</p>
+          </div>
+
+          <div class="card__tools">
+            <label class="search">
+              <svg class="search__icon" viewBox="0 0 12 12" stroke-linecap="round">
+                <circle cx="5" cy="5" r="3.6"/>
+                <path d="M8 8l3 3"/>
+              </svg>
+              <input class="search__input" type="search" id="q" placeholder="Buscar chamado" aria-label="Buscar chamado">
+            </label>
+
+            <select class="select" id="prio" aria-label="Filtrar por prioridade">
+              <option value="">Todas as prioridades</option>
+              <option value="urgente">Urgente</option>
+              <option value="alto">Alto</option>
+              <option value="medio">Médio</option>
+              <option value="baixo">Baixo</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="card__body">
+          <table class="data-table">
+            <thead class="data-table__head">
+              <tr class="data-table__head-row">
+                <th class="data-table__th">Código</th>
+                <th class="data-table__th">Equipamento</th>
+                <th class="data-table__th">Tipo de manutenção</th>
+                <th class="data-table__th data-table__th--date">Data</th>
+                <th class="data-table__th">Local</th>
+                <th class="data-table__th">Prioridade</th>
+                <th class="data-table__th">Prazo</th>
+                <th class="data-table__th">Ações</th>
+              </tr>
+            </thead>
+
+            <!-- As linhas são geradas pelo JavaScript (função render) -->
+            <tbody class="data-table__body" id="rows"></tbody>
+          </table>
+
+          <div class="card__empty" id="empty" hidden>
+            Nenhum chamado encontrado. Ajuste a busca ou os filtros.
+          </div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <script>
+    // Dados de exemplo (troque pela sua API/banco depois)
+    const chamados = [
+      { cod: "0045", eq: "Aspirador de pó",     tipo: "Motor queimado",   data: "23/10/2026", local: "Toyota Sorocaba",   prio: "medio",   dias: 2 },
+      { cod: "0040", eq: "Trator",              tipo: "Vazamento de óleo",data: "20/10/2026", local: "ZF Sorocaba",       prio: "urgente", dias: -1 },
+      { cod: "0032", eq: "Escavadeira",         tipo: "Trocar mangueira", data: "12/10/2026", local: "Ibrafer Sorocaba",  prio: "baixo",   dias: 10 },
+      { cod: "0011", eq: "Aspirador industrial",tipo: "Motor queimado",   data: "01/10/2026", local: "Clarlos Sorocaba",  prio: "alto",    dias: 3 },
+      { cod: "0009", eq: "Betoneira 400 L",     tipo: "Trocar correia",   data: "27/09/2026", local: "Clarlos Sorocaba",  prio: "urgente", dias: -1 },
+      { cod: "0079", eq: "Multicalibrador",     tipo: "Falha elétrica",   data: "10/09/2026", local: "Dana Sorocaba",     prio: "urgente", dias: 0 },
+      { cod: "0033", eq: "Enceradeira",         tipo: "Motor fundido",    data: "04/09/2026", local: "Emphasis Sorocaba", prio: "alto",    dias: 5 },
+    ];
+
+    // Texto exibido em cada prioridade
+    const labels = { urgente: "Urgente", alto: "Alto", medio: "Médio", baixo: "Baixo" };
+    const $ = s => document.querySelector(s);
+    let cardFilter = "todos";
+
+    // Mostra "Atrasado", "No dia" ou "N dias"
+    function prazoHtml(d) {
+      if (d < 0)  return '<span class="deadline deadline--late">Atrasado</span>';
+      if (d === 0) return '<span class="deadline deadline--today">No dia</span>';
+      return d + " dias";
+    }
+
+    // Decide se um chamado passa nos filtros (busca, prioridade e cards)
+    function matches(c) {
+      const q = $("#q").value.trim().toLowerCase();
+      const p = $("#prio").value;
+      if (p && c.prio !== p) return false;
+      if (q && !(c.cod+c.eq+c.tipo+c.local).toLowerCase().includes(q)) return false;
+      if (cardFilter === "urgentes" && c.prio !== "urgente") return false;
+      if (cardFilter === "atrasados" && c.dias >= 0) return false;
+      if (cardFilter === "semana" && !(c.dias >= 0 && c.dias <= 7)) return false;
+      return true;
+    }
+
+    // Desenha as linhas da tabela e atualiza o contador
+    function render() {
+      const list = chamados.filter(matches);
+      $("#rows").innerHTML = list.map(c => `
+        <tr class="data-table__row" data-cod="${c.cod}">
+          <td class="data-table__td data-table__td--code" data-label="Código">${c.cod}</td>
+          <td class="data-table__td data-table__td--name" data-label="Equipamento">${c.eq}</td>
+          <td class="data-table__td" data-label="Tipo de manutenção">${c.tipo}</td>
+          <td class="data-table__td data-table__td--date" data-label="Data">${c.data}</td>
+          <td class="data-table__td" data-label="Local">${c.local}</td>
+          <td class="data-table__td" data-label="Prioridade">
+            <span class="badge badge--${c.prio}"><span class="badge__dot"></span>${labels[c.prio]}</span>
+          </td>
+          <td class="data-table__td data-table__td--deadline" data-label="Prazo">${prazoHtml(c.dias)}</td>
+          <td class="data-table__td data-table__td--actions">
+            <div class="row-actions">
+              <button class="row-actions__button row-actions__button--accept" type="button" data-act="aceitar">Aceitar</button>
+              <span class="row-actions__separator">·</span>
+              <button class="row-actions__button row-actions__button--reject" type="button" data-act="recusar">Recusar</button>
+            </div>
+          </td>
+        </tr>`).join("");
+      $("#empty").hidden = list.length > 0;
+      $("#count").textContent = list.length + (list.length === 1 ? " registro encontrado" : " registros encontrados");
+    }
+
+    // Clique nos cards de resumo = filtro rápido
+    document.querySelectorAll(".stat-card").forEach(b => b.addEventListener("click", () => {
+      cardFilter = b.dataset.filter;
+      document.querySelectorAll(".stat-card").forEach(x => {
+          x.setAttribute("aria-pressed", x === b);
+          x.classList.toggle("stat-card--selected", x === b);
+        });
+      render();
+    }));
+
+    // Busca, prioridade e botão "Ver pendentes"
+    $("#q").addEventListener("input", render);
+    $("#prio").addEventListener("change", render);
+    $("#pendentes").addEventListener("click", () => {
+      $("#prio").value = "";
+      $("#q").value = "";
+      document.querySelector('[data-filter="todos"]').click();
+    });
+
+    // Aceitar / Recusar (por enquanto só remove da lista)
+    $("#rows").addEventListener("click", e => {
+      const btn = e.target.closest("button[data-act]");
+      if (!btn) return;
+      const cod = btn.closest("tr").dataset.cod;
+      const i = chamados.findIndex(c => c.cod === cod);
+      if (i > -1) {
+        chamados.splice(i, 1);
+        render();
+      }
+    });
+
+    // Menu lateral no celular: abre e fecha pelo botão do topo
+    const menuBtn = $("#menu-toggle");
+    const sidebar = $("#sidebar");
+    const overlay = $("#overlay");
+    const mobileQuery = window.matchMedia("(max-width: 480px)");
+
+    function setMenu(open) {
+      sidebar.classList.toggle("sidebar--open", open);
+      overlay.classList.toggle("overlay--visible", open);
+      document.body.classList.toggle("is-scroll-locked", open);
+      menuBtn.setAttribute("aria-expanded", open);
+      menuBtn.setAttribute("aria-label", open ? "Fechar menu" : "Abrir menu");
+    }
+
+    // O botão só entra na navegação por teclado quando está no tamanho de celular
+    function syncMenuButton() {
+      menuBtn.tabIndex = mobileQuery.matches ? 0 : -1;
+      setMenu(false);
+    }
+
+    menuBtn.addEventListener("click", () => setMenu(!sidebar.classList.contains("sidebar--open")));
+    overlay.addEventListener("click", () => setMenu(false));
+    document.addEventListener("keydown", e => {
+      if (e.key === "Escape") setMenu(false);
+    });
+    document.querySelectorAll(".nav__link").forEach(a => a.addEventListener("click", () => setMenu(false)));
+    mobileQuery.addEventListener("change", syncMenuButton);
+    syncMenuButton();
+
+    // Primeira renderização
+    render();
+  </script>
+
+</body>
+
+</html>

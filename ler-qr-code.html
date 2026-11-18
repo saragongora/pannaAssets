@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ler QR Code · Panna Equipamentos</title>
+    <link rel="icon" href="assets/logo_group.png" type="image/png">
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.9/dist/js/bootstrap.min.js" integrity="sha384-89aa4glufciPv46aKltztWQEmk+Tu9W2RhzXr6VcnUUEub7F8+06RcL2RYLCOHUq" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body class="page page--maintenance">
+    <header>
+        <nav class="navbar">
+            <ul class="navbar__list">
+                <li><button type="button" class="navbar__btn-menu" id="toggle-sidebar" aria-label="Mostrar ou ocultar menu lateral" aria-expanded="true"><img src="assets/btn_menu.svg" alt="botao menu"></button></li>
+                <li class="navbar__item"><img class="navbar__logo" id="navbar-logo" src="assets/logo_group.png" alt="Grupo Panna"></li>
+                <li class="navbar__item" id="navbar-manage-equipment"> • Gestão interna</li>
+            </ul>
+        </nav>
+    </header>
+
+    <div class="layout-container">
+        <div class="sidebar" id="side-menu">
+            <ul>
+                <li class="sidebar__buttons"><button type="button" class="navbar__btn-menu" onclick="window.location.href ='CE1.html'"><img src="assets/icon_file.svg" alt="botao menu">Cadastrar Equipamentos</button></li>
+                <li class="sidebar__buttons"><button type="button" class="navbar__btn-menu" onclick="window.location.href ='GE1.html'"><img src="assets/icon_box.svg" alt="botao menu">Gerenciar Equipamentos</button></li>
+                <li class="sidebar__buttons"><button type="button" class="navbar__btn-menu" onclick="window.location.href ='TE1.html'"><img src="assets/icon_truck.svg" alt="botao menu">Transferir</button></li>
+                <li class="sidebar__buttons"><button type="button" class="navbar__btn-menu" onclick="window.location.href ='#'"><img src="assets/icon_maintenance.png" alt="botao menu" style="width: 20px; height: 20px;">Manutenção</button></li>
+                <li class="sidebar__buttons"><button type="button" class="navbar__btn-menu" onclick="window.location.href ='#'"><img src="assets/icon_report.png" alt="botao menu" style="width: 20px; height: 20px;">Relatórios</button></li>
+            </ul>
+
+            <footer class="footer_sidebar">
+                <button type="button" class="navbar__btn-menu" onclick="window.location.href = 'index.html'">
+                    <img src="assets/logo_profile.svg" alt="botao menu">
+                </button>
+            </footer>
+        </div>
+
+        <main class="main-content">
+            <header class="screen__header">
+                <div>
+                    <h1 class="title-h1">Ler QR Code</h1>
+                    <h3 class="title-h3">Aponte a câmera para o QR Code do equipamento ou digite o código.</h3>
+                </div>
+            </header>
+            <div class="form-card form-card--maintenance">
+                <div class="qr-scan" aria-hidden="true">
+                    <span class="qr-scan__corner qr-scan__corner--top-left"></span>
+                    <span class="qr-scan__corner qr-scan__corner--top-right"></span>
+                    <span class="qr-scan__corner qr-scan__corner--bottom-left"></span>
+                    <span class="qr-scan__corner qr-scan__corner--bottom-right"></span>
+                    <svg class="qr-scan__icon" viewBox="0 0 56 56" fill="none" stroke="#1A1A1A" stroke-width="3.5" stroke-linecap="round">
+                        <rect x="4" y="4" width="18" height="18" rx="2"/><rect x="34" y="4" width="18" height="18" rx="2"/>
+                        <rect x="4" y="34" width="18" height="18" rx="2"/><path d="M34 38h18M43 30v22"/>
+                    </svg>
+                </div>
+                <p class="field-qr__or">ou</p>
+                <div class="form-group">
+                    <label class="field-qr__label" for="equipment-code">CÓDIGO DO EQUIPAMENTO</label>
+                    <input class="register-form__input" type="text" id="equipment-code" placeholder="Adicionar código" autocomplete="off">
+                    <p class="field-panel__hint" id="field-hint" role="status"></p>
+                </div>
+                <button type="button" class="button--register-equip maintenance-form__button maintenance-form__button--block" id="field-continue">Continuar</button>
+            </div>
+        </main>
+    </div>
+
+    <!-- JavaScript compartilhado: menu, armazenamento e telas de manutenção. -->
+    <script src="equipamentos-iniciais.js"></script>
+    <script src="panna.js"></script>
+    <script src="panna-integracao.js"></script>
+</body>
+</html>

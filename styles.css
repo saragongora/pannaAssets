@@ -1092,3 +1092,820 @@ body:not(.panna-op-collapsed) .main-content--field{margin-left:236px;max-width:c
  .panna-modal-backdrop{padding:14px}
 }
 @media(max-width:420px){.panna-request-toolbar>div:last-child{width:100%}.panna-request-toolbar input,.panna-request-toolbar select{flex:1 1 100%;width:100%}.panna-dialog-actions{padding-top:18px}.panna-dialog-actions button{flex:1}}
+
+/* ==========================================================
+   MANUTENÇÃO · Operação em campo, formulários e Regras e alertas
+   Classes novas seguem BEM (bloco__elemento--modificador).
+   ========================================================== */
+
+/* ---------- Menu lateral como gaveta (tablet e celular) ----------
+   Só nas telas com <body class="page page--maintenance">. */
+@media (max-width: 1024px) {
+  .page--maintenance .main-content {
+    margin-left: 0;
+    width: 100%;
+  }
+
+  .page--maintenance:not(.sidebar-collapsed) .sidebar {
+    box-shadow: 6px 0 24px rgba(0, 0, 0, 0.18);
+  }
+
+  .page--maintenance:not(.sidebar-collapsed)::after {
+    content: "";
+    position: fixed;
+    inset: 66px 0 0 242px;
+    z-index: 1010;
+    background: rgba(20, 20, 20, 0.35);
+  }
+}
+
+/* Sem animação enquanto a página carrega (o JavaScript liga com .is-ready). */
+.page--maintenance:not(.is-ready) .sidebar,
+.page--maintenance:not(.is-ready) .main-content {
+  transition: none;
+}
+
+@media (max-width: 480px) {
+  .page--maintenance #navbar-manage-equipment {
+    display: none;
+  }
+}
+
+/* ---------- Texto que muda entre desktop e celular ---------- */
+.responsive-text--mobile {
+  display: none;
+}
+
+@media (max-width: 480px) {
+  .responsive-text--desktop {
+    display: none;
+  }
+
+  .responsive-text--mobile {
+    display: inline;
+  }
+}
+
+/* ---------- Cabeçalho de página ---------- */
+.screen {
+  width: 100%;
+}
+
+.screen__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.screen__eyebrow {
+  margin: 0 0 4px;
+  font-size: 0.62rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #6F6F6A;
+}
+
+.screen__action {
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+@media (max-width: 480px) {
+  .screen__action {
+    width: 100%;
+  }
+}
+
+/* ---------- Cartão e formulário (abrir chamado e registrar avaria) ---------- */
+.form-card--maintenance {
+  width: 100%;
+  max-width: 640px;
+}
+
+.maintenance-form__equipment {
+  margin-bottom: 20px;
+}
+
+.maintenance-form__name {
+  margin: 0 0 2px;
+  font-size: 1rem;
+  font-weight: 800;
+  color: #1A1A1A;
+}
+
+.maintenance-form__code {
+  margin: 0;
+  font-size: 0.72rem;
+  color: #77737B;
+}
+
+.maintenance-form__radio {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.81rem;
+  cursor: pointer;
+}
+
+.maintenance-form__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 28px;
+}
+
+.maintenance-form__button {
+  min-width: 120px;
+  cursor: pointer;
+}
+
+.maintenance-form__button--block {
+  width: 100%;
+  margin-top: 16px;
+}
+
+@media (max-width: 480px) {
+  .form-card--maintenance {
+    max-width: none;
+    padding: 20px 16px;
+  }
+
+  .maintenance-form__actions .maintenance-form__button {
+    flex: 1;
+    min-width: 0;
+  }
+}
+
+/* ---------- Operação em campo ---------- */
+.field-panel {
+  max-width: 640px;
+  padding: 28px 32px;
+  background-color: #FFFFFF;
+  border: 1px solid #E5E5E3;
+  border-radius: 16px;
+}
+
+.field-panel__identify {
+  margin-bottom: 24px;
+}
+
+.field-panel__hint {
+  min-height: 1.2em;
+  margin: 8px 0 0;
+  font-size: 0.78rem;
+  color: #AD2929;
+}
+
+.action-tiles {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.action-tiles__item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  min-height: 108px;
+  padding: 12px;
+  background-color: #F7F7F5;
+  border: 1px solid #E2E2DF;
+  border-radius: 12px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #1A1A1A;
+  cursor: pointer;
+}
+
+.action-tiles__item:hover,
+.action-tiles__item:focus-visible {
+  background-color: #FFF4B0;
+  border-color: #E2BC00;
+}
+
+.action-tiles__item--primary {
+  background-color: #FFD500;
+  border-color: #E2BC00;
+}
+
+.action-tiles__icon-box {
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+}
+
+.action-tiles__icon {
+  width: 18px;
+  height: 18px;
+}
+
+@media (max-width: 480px) {
+  .field-panel {
+    max-width: none;
+    padding: 0;
+    background: none;
+    border: 0;
+  }
+
+  .field-panel__identify {
+    margin-bottom: 12px;
+    padding: 20px 16px;
+    background-color: #FFFFFF;
+    border: 1px solid #E5E5E3;
+    border-radius: 16px;
+  }
+
+  .action-tiles {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .action-tiles__item {
+    flex-direction: row;
+    justify-content: flex-start;
+    min-height: 64px;
+    padding: 0 14px;
+    background-color: #FFFFFF;
+    border-radius: 14px;
+    font-size: 0.88rem;
+  }
+
+  .action-tiles__item--primary {
+    background-color: #FFFFFF;
+    border-color: #E2E2DF;
+  }
+
+  .action-tiles__icon-box {
+    width: 40px;
+    height: 40px;
+    background-color: #F4F4F2;
+    border-radius: 10px;
+  }
+
+  .action-tiles__item--primary .action-tiles__icon-box {
+    background-color: #FFD500;
+  }
+}
+
+/* ---------- Ler QR Code ---------- */
+.qr-scan {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: min(250px, 100%);
+  aspect-ratio: 1;
+  margin: 8px auto 16px;
+}
+
+.qr-scan__corner {
+  position: absolute;
+  width: 36px;
+  height: 36px;
+  border: 0 solid #1A1A1A;
+}
+
+.qr-scan__corner--top-left {
+  top: 0;
+  left: 0;
+  border-top-width: 4px;
+  border-left-width: 4px;
+}
+
+.qr-scan__corner--top-right {
+  top: 0;
+  right: 0;
+  border-top-width: 4px;
+  border-right-width: 4px;
+}
+
+.qr-scan__corner--bottom-left {
+  bottom: 0;
+  left: 0;
+  border-bottom-width: 4px;
+  border-left-width: 4px;
+}
+
+.qr-scan__corner--bottom-right {
+  right: 0;
+  bottom: 0;
+  border-right-width: 4px;
+  border-bottom-width: 4px;
+}
+
+.qr-scan__video {
+  position: absolute;
+  inset: 6px;
+  width: calc(100% - 12px);
+  height: calc(100% - 12px);
+  object-fit: cover;
+  border-radius: 6px;
+  background-color: #1A1A1A;
+}
+
+.qr-scan__video[hidden] {
+  display: none;
+}
+
+.qr-scan--active .qr-scan__icon {
+  display: none;
+}
+
+.qr-scan__icon {
+  width: 56px;
+  height: 56px;
+}
+
+.field-panel__qr-button {
+  display: block;
+  min-width: 170px;
+  margin: 0 auto 4px;
+  cursor: pointer;
+}
+
+/* ---------- Painel genérico (Regras e alertas) ---------- */
+.panel {
+  min-width: 0;
+  padding: 20px 22px;
+  background-color: #FFFFFF;
+  border: 1px solid #E5E5E3;
+  border-radius: 14px;
+}
+
+.panel__title {
+  margin: 0 0 4px;
+  font-size: 1rem;
+  font-weight: 800;
+  color: #1A1A1A;
+}
+
+.panel__subtitle {
+  margin: 0 0 14px;
+  font-size: 0.68rem;
+  color: #77737B;
+}
+
+@media (max-width: 480px) {
+  .panel {
+    padding: 16px 14px;
+  }
+}
+
+/* ---------- Regras e alertas: grade da página ---------- */
+.rules-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 340px;
+  gap: 16px;
+  align-items: start;
+}
+
+.rules-layout__main,
+.rules-layout__aside {
+  display: grid;
+  gap: 16px;
+  min-width: 0;
+}
+
+@media (max-width: 1024px) {
+  .rules-layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (min-width: 681px) and (max-width: 1024px) {
+  .rules-layout__aside {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: start;
+  }
+}
+
+/* ---------- Tabela de regras ---------- */
+.rules-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.rules-table__th {
+  padding: 10px 8px;
+  background-color: #F8F8F6;
+  font-size: 0.62rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-align: left;
+  text-transform: uppercase;
+  color: #77737B;
+}
+
+.rules-table__td {
+  padding: 16px 8px;
+  border-top: 1px solid #EEEEEB;
+  font-size: 0.78rem;
+  color: #4B4B47;
+}
+
+.rules-table__td--name {
+  font-weight: 700;
+  color: #1A1A1A;
+}
+
+.rules-table__td--actions {
+  text-align: right;
+}
+
+.rules-table__edit {
+  padding: 4px;
+  background: transparent;
+  border: 0;
+  color: #4B4B47;
+  cursor: pointer;
+}
+
+.rules-table__edit:hover {
+  color: #1A1A1A;
+}
+
+.rules-table__icon {
+  width: 16px;
+  height: 16px;
+}
+
+@media (max-width: 480px) {
+  .rules-table,
+  .rules-table__body,
+  .rules-table__row,
+  .rules-table__td {
+    display: block;
+    width: 100%;
+  }
+
+  .rules-table__head {
+    display: none;
+  }
+
+  .rules-table__row {
+    padding: 12px 0;
+    border-top: 1px solid #EEEEEB;
+  }
+
+  .rules-table__td {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 4px 0;
+    border: 0;
+    text-align: right;
+  }
+
+  .rules-table__td::before {
+    content: attr(data-label);
+    flex: none;
+    font-size: 0.7rem;
+    font-weight: 500;
+    color: #77737B;
+    text-align: left;
+  }
+
+  .rules-table__td--actions {
+    justify-content: flex-end;
+  }
+
+  .rules-table__td--actions::before {
+    display: none;
+  }
+}
+
+/* ---------- Exceção por equipamento ---------- */
+.exception-form {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto;
+  gap: 16px;
+  align-items: end;
+}
+
+.exception-form__status {
+  grid-column: 1 / -1;
+  min-height: 1.2em;
+  margin: 0;
+  font-size: 0.78rem;
+  color: #226C3E;
+}
+
+@media (max-width: 1024px) {
+  .exception-form {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* ---------- Alertas ---------- */
+.alert-card {
+  --alert-color: #226C3E;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 8px;
+  padding: 10px 12px;
+  background-color: #F7F7F5;
+  border: 1px solid #E5E5E3;
+  border-left: 4px solid var(--alert-color);
+  border-radius: 10px;
+}
+
+.alert-card--late {
+  --alert-color: #B91C1C;
+}
+
+.alert-card--soon {
+  --alert-color: #B45309;
+}
+
+.alert-card__name {
+  margin: 0;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: #1A1A1A;
+}
+
+.alert-card__text {
+  margin: 2px 0 0;
+  font-size: 0.68rem;
+  color: var(--alert-color);
+}
+
+.alert-card__link {
+  flex: none;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #1A1A1A;
+  text-decoration: none;
+}
+
+.alert-card__link:hover {
+  text-decoration: underline;
+}
+
+.alert-card__empty {
+  margin: 0;
+  font-size: 0.78rem;
+  color: #77737B;
+}
+
+/* ---------- Como avisar (interruptores) ---------- */
+.switch-list__item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 0;
+  font-size: 0.8rem;
+}
+
+.switch {
+  position: relative;
+  flex: none;
+  width: 42px;
+  height: 24px;
+  background-color: #D5D3D7;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.switch::after {
+  content: "";
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 18px;
+  height: 18px;
+  background-color: #FFFFFF;
+  border-radius: 50%;
+  transition: transform 0.2s;
+}
+
+.switch:checked {
+  background-color: #226C3E;
+}
+
+.switch:checked::after {
+  transform: translateX(18px);
+}
+
+.switch:focus-visible {
+  outline: 2px solid #1A1A1A;
+  outline-offset: 2px;
+}
+
+/* ---------- Janela de regra ---------- */
+.rule-dialog {
+  width: min(440px, calc(100% - 32px));
+  padding: 24px;
+  border: 0;
+  border-radius: 16px;
+}
+
+.rule-dialog::backdrop {
+  background: rgba(0, 0, 0, 0.5);
+}
+
+.rule-dialog__title {
+  margin: 0 0 16px;
+  font-size: 1.1rem;
+  font-weight: 800;
+}
+
+.rule-dialog__fields {
+  display: grid;
+  gap: 14px;
+}
+
+.rule-dialog__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+/* ---------- Utilitário: some da tela, mas continua para leitores de tela ---------- */
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+/* ---------- Consulta do equipamento (depois de ler o QR Code) ---------- */
+.equipment-info {
+  width: 100%;
+  max-width: 860px;
+  padding: 24px 28px;
+  background-color: #FFFFFF;
+  border: 1px solid #E5E5E3;
+  border-radius: 16px;
+}
+
+.equipment-info__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.equipment-info__name {
+  margin: 0 0 2px;
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: #1A1A1A;
+}
+
+.equipment-info__code {
+  margin: 0;
+  font-size: 0.75rem;
+  color: #77737B;
+}
+
+.equipment-info__status {
+  display: inline-flex;
+  align-items: center;
+  padding: 5px 12px;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+
+.equipment-info__status--running {
+  background-color: #DDF3E4;
+  color: #226C3E;
+}
+
+.equipment-info__status--maintenance {
+  background-color: #FDEFD3;
+  color: #8A5A00;
+}
+
+.equipment-info__status--stopped {
+  background-color: #FBE0E0;
+  color: #B3261E;
+}
+
+.equipment-info__grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 18px 20px;
+  margin: 0;
+}
+
+.equipment-info__field {
+  min-width: 0;
+}
+
+.equipment-info__label {
+  margin: 0 0 4px;
+  font-size: 0.62rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #77737B;
+}
+
+.equipment-info__value {
+  margin: 0;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #1A1A1A;
+  overflow-wrap: anywhere;
+}
+
+.equipment-info__section {
+  margin-top: 22px;
+  padding-top: 18px;
+  border-top: 1px solid #EEEEEB;
+}
+
+.equipment-info__section[hidden] {
+  display: none;
+}
+
+.equipment-info__section-title {
+  margin: 0 0 10px;
+  font-size: 0.85rem;
+  font-weight: 800;
+  color: #1A1A1A;
+}
+
+.equipment-info__notes {
+  margin: 0;
+  font-size: 0.82rem;
+  color: #4B4B47;
+}
+
+.equipment-info__events {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.equipment-info__event {
+  display: grid;
+  gap: 2px;
+  padding: 10px 12px;
+  background-color: #F7F7F5;
+  border-radius: 10px;
+  font-size: 0.78rem;
+  color: #4B4B47;
+}
+
+.equipment-info__event--empty {
+  color: #77737B;
+}
+
+.equipment-info__actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+.equipment-info__button {
+  min-width: 150px;
+  cursor: pointer;
+}
+
+@media (max-width: 1024px) {
+  .equipment-info__grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 480px) {
+  .equipment-info {
+    max-width: none;
+    padding: 20px 16px;
+  }
+
+  .equipment-info__grid {
+    gap: 14px 12px;
+  }
+
+  .equipment-info__actions {
+    flex-direction: column-reverse;
+  }
+
+  .equipment-info__button {
+    width: 100%;
+  }
+}
