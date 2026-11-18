@@ -34,7 +34,7 @@
             data: dataEvento || new Date().toISOString()
         });
     }
-    // Menu: o estado é preservado durante a navegação entre as telas.
+    // ETAPA 26: cada página inicia com menu recolhido no desktop e no celular; o botão alterna a abertura.
     function iniciarMenu() {
         const botao = $('#toggle-sidebar');
         if (!botao) return;
@@ -43,7 +43,7 @@
             botao.setAttribute('aria-expanded', String(!recolhido));
             botao.title = recolhido ? 'Mostrar menu lateral' : 'Ocultar menu lateral';
         };
-        atualizar(localStorage.getItem(MENU_KEY) === 'true');
+        atualizar(true); // ETAPA 26: não reutiliza o último estado salvo; inicia sempre recolhido.
         botao.addEventListener('click', () => {
             const recolhido = !document.body.classList.contains('sidebar-collapsed');
             atualizar(recolhido);
@@ -289,6 +289,41 @@
         let lista = listarEquipamentos();
         const classes = {'Em funcionamento':'functioning','Em manutenção':'maintenance','Parado':'stopped','Inativo':'inactive'};
         const filtros = {'in-operation-sit':'Em funcionamento','under-maintenance':'Em manutenção','stopped-sit':'Parado','inactive-sit':'Inativo'};
+        // ETAPA 25: alternância de situação com confirmação e registro no histórico.
+        // Mantém a situação anterior para que a reativação não apague um status de manutenção.
+        function alternarSituacao(codigo) {
+            const atual = lista.find(e => e.codigo === codigo);
+            if (!atual) { alert('Equipamento não encontrado.'); return; }
+            const inativo = atual.situacao === 'Inativo';
+            const acao = inativo ? 'reativar' : 'inativar';
+            if (!confirm('Deseja ' + acao + ' o equipamento "' + (atual.nome || codigo) + '" (' + codigo + ')?')) return;
+            const anterior = atual.situacao || 'Em funcionamento';
+            if (inativo) {
+                atual.situacao = atual.situacaoAntesInativacao || 'Em funcionamento';
+                delete atual.situacaoAntesInativacao;
+            } else {
+                atual.situacaoAntesInativacao = anterior;
+                atual.situacao = 'Inativo';
+            }
+            registrarEvento(atual, 'status', inativo ? 'Equipamento reativado' : 'Equipamento inativado',
+                'Situação alterada de ' + anterior + ' para ' + atual.situacao + '.');
+            atual.atualizadoEm = new Date().toISOString();
+            try { salvarEquipamentos(lista); }
+            catch (erro) { alert('Não foi possível alterar a situação do equipamento.'); lista = listarEquipamentos(); return; }
+            // ETAPA 25: refaz tabela, contadores e filtro sem recarregar a página.
+            renderizar();
+        }
+        // ETAPA 25: exclusão definitiva com confirmação explícita, como na tela GE2.
+        function confirmarExclusao(codigo) {
+            const atual = lista.find(e => e.codigo === codigo);
+            if (!atual) { alert('Equipamento não encontrado.'); return; }
+            if (!confirm('Excluir definitivamente "' + (atual.nome || codigo) + '" (' + codigo + ')?\nEsta ação não pode ser desfeita e remove também o histórico e as manutenções vinculadas.')) return;
+            const restante = lista.filter(e => e.codigo !== codigo);
+            try { salvarEquipamentos(restante); }
+            catch (erro) { alert('Não foi possível excluir o equipamento.'); return; }
+            lista = restante;
+            renderizar();
+        }
         function renderizar() {
             tbody.replaceChildren();
             const busca = (pesquisa?.value || '').toLocaleLowerCase('pt-BR');
@@ -307,20 +342,38 @@
                         event.preventDefault(); location.href = urlDetalhe(e.codigo);
                     }
                 });
-                for (const valor of [e.codigo,e.nome,e.grupo,e.localizacao,e.voltagem,dataBR(e.proximaPreventiva)]) {
-                    const td = document.createElement('td'); td.textContent = valor || '—'; tr.append(td);
-                }
+                // ETAPA 24: rótulos acessíveis permitem exibir cada linha como cartão no celular.
+                const camposTabela = ['Código','Equipamento','Grupo','Local','Voltagem','Próxima preventiva'];
+                [e.codigo,e.nome,e.grupo,e.localizacao,e.voltagem,dataBR(e.proximaPreventiva)].forEach((valor, indice) => {
+                    const td = document.createElement('td');
+                    td.dataset.label = camposTabela[indice]; // ETAPA 24: nome da coluna usado pelo CSS responsivo.
+                    td.textContent = valor || '—'; tr.append(td);
+                });
                 const tdStatus = document.createElement('td');
+                tdStatus.dataset.label = 'Situação'; // ETAPA 24: identifica o status no cartão móvel.
                 const badge = document.createElement('span'); badge.className = 'status-badge ' + (classes[e.situacao] || 'functioning');
                 badge.textContent = '• ' + (e.situacao || 'Em funcionamento'); tdStatus.append(badge); tr.append(tdStatus);
                 const acoes = document.createElement('td');
-                // Mantemos os ícones originais. A edição agora reutiliza CE1; as demais ações ficam para depois.
+                acoes.dataset.label = 'Ações'; // ETAPA 24: mantém os botões de edição visíveis no celular.
+                // ETAPA 25: os três ícones da listagem executam as mesmas operações de GE2.
+                // As ações usam o código (identificador estável), nunca o índice da linha filtrada.
                 const grupo = document.createElement('div'); grupo.className = 'equipament-table__buttons';
-                for (const [classe,icone,rotulo] of [['edit','icon_edit.svg','Editar'],['enable-disable','icon_enable_disable.png','Ativar ou desativar'],['delete','icon_delete.svg','Excluir']]) {
-                    const botao = document.createElement('button'); botao.type='button'; botao.className='equipament-table__'+classe;
-                    botao.title = classe === 'edit' ? rotulo : rotulo + ' (funcionalidade futura)'; botao.setAttribute('aria-label',rotulo + ' ' + e.nome);
-                    const img=document.createElement('img'); img.src='assets/'+icone; img.alt=rotulo; img.width=30; botao.append(img);
-                    if (classe === 'edit') botao.addEventListener('click', () => location.href = 'CE1.html?editar=' + encodeURIComponent(e.codigo));
+                for (const [classe,icone] of [['edit','icon_edit.svg'],['enable-disable','icon_enable_disable.png'],['delete','icon_delete.svg']]) {
+                    const botao = document.createElement('button');
+                    botao.type = 'button'; botao.className = 'equipament-table__' + classe;
+                    const inativo = e.situacao === 'Inativo';
+                    const rotulo = classe === 'edit' ? 'Editar' : classe === 'delete' ? 'Excluir' : inativo ? 'Reativar' : 'Inativar';
+                    botao.title = rotulo + ' equipamento';
+                    botao.setAttribute('aria-label', rotulo + ' ' + e.nome);
+                    const img = document.createElement('img'); img.src = 'assets/' + icone;
+                    img.alt = ''; img.width = 30; botao.append(img);
+                    // ETAPA 25: impedir que o clique no ícone abra a página de detalhes.
+                    botao.addEventListener('click', evento => {
+                        evento.stopPropagation();
+                        if (classe === 'edit') { location.href = 'CE1.html?editar=' + encodeURIComponent(e.codigo); return; }
+                        if (classe === 'enable-disable') alternarSituacao(e.codigo);
+                        if (classe === 'delete') confirmarExclusao(e.codigo);
+                    });
                     grupo.append(botao);
                 }
                 acoes.append(grupo); tr.append(acoes); tbody.append(tr);

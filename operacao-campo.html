@@ -10,11 +10,12 @@
     <link rel="stylesheet" href="styles.css">
 </head>
 
-<body class="page page--maintenance">
+<!-- ETAPA 26: menu inicia recolhido em qualquer tamanho de tela. -->
+<body class="page page--maintenance sidebar-collapsed">
     <header>
         <nav class="navbar">
             <ul class="navbar__list">
-                <li><button type="button" class="navbar__btn-menu" id="toggle-sidebar" aria-label="Mostrar ou ocultar menu lateral" aria-expanded="true"><img src="assets/btn_menu.svg" alt="botao menu"></button></li>
+                <li><button type="button" class="navbar__btn-menu" id="toggle-sidebar" aria-label="Mostrar ou ocultar menu lateral" aria-expanded="false"><img src="assets/btn_menu.svg" alt="botao menu"></button></li>
                 <li class="navbar__item"><img class="navbar__logo" id="navbar-logo" src="assets/logo_group.png" alt="Grupo Panna"></li>
                 <li class="navbar__item" id="navbar-manage-equipment"> • Gestão interna</li>
             </ul>
@@ -69,11 +70,12 @@
                         <input class="register-form__input" type="text" id="equipment-code" placeholder="Digite o código ou leia o QR Code" autocomplete="off">
                         <p class="field-panel__hint" id="field-hint" role="status"></p>
                     </div>
-                    <button type="button" class="button--register-equip maintenance-form__button maintenance-form__button--block" id="field-continue">Ver informações do equipamento</button>
+                    <!-- ETAPA 29: removido o botão de consulta; o operador escolhe diretamente a ação após identificar o equipamento. -->
                 </div>
 
+                <!-- ETAPA 29: ações começam neutras, sem opção pré-selecionada. -->
                 <div class="action-tiles">
-                    <button type="button" class="action-tiles__item action-tiles__item--primary" id="field-open-ticket">
+                    <button type="button" class="action-tiles__item" id="field-open-ticket">
                         <span class="action-tiles__icon-box"><svg class="action-tiles__icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10.5 2a3.5 3.5 0 0 0-3 5L2 12.5 3.5 14 9 8.5a3.5 3.5 0 0 0 5-3l-2 2-2-.5-.5-2 2-2z"/></svg></span>
                         <span>Abrir <span class="responsive-text responsive-text--mobile">chamado de manutenção</span><span class="responsive-text responsive-text--desktop">chamado</span></span>
                     </button>

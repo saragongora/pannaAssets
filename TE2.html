@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerenciar transferência | Panna Assets</title>
+    <link rel="icon" href="assets/logo_group.png" type="image/png">
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.9/dist/js/bootstrap.min.js" integrity="sha384-89aa4glufciPv46aKltztWQEmk+Tu9W2RhzXr6VcnUUEub7F8+06RcL2RYLCOHUq" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="styles.css">
+    
+</head>
+
+
+<!-- ETAPA 26: menu inicia recolhido em qualquer tamanho de tela. -->
+<body class="page page--home sidebar-collapsed panna-transfer">
+    <header>
+        <nav class="navbar">
+            <ul class="navbar__list">
+                <li><button type="button" class="navbar__btn-menu" id="toggle-sidebar" aria-label="Abrir ou fechar menu" aria-expanded="false"><img src="assets/btn_menu.svg" alt="botao menu"></button></li>
+                <li class="navbar__item"><img class="navbar__logo" id="navbar-logo" src="assets/logo_group.png"></li>
+                <li class="navbar__item" id="navbar-manage-equipment"> • Gestão interna</li>
+            </ul>    
+        </nav>
+    </header>
+
+    <div class="layout-container">
+        <div class="sidebar" id="side-menu">
+            <ul>
+                <li class="sidebar__buttons"><button type="button" class="navbar__btn-menu" onclick="window.location.href ='CE1.html'"><img src="assets/icon_file.svg" alt="botao menu">Cadastrar Equipamentos</button></li>
+                <li class="sidebar__buttons"><button type="button" class="navbar__btn-menu" onclick="window.location.href ='GE1.html'"><img src="assets/icon_box.svg" alt="botao menu">Gerenciar Equipamentos</button></li>
+                <li class="sidebar__buttons sidebar__buttons--active"><button type="button" class="navbar__btn-menu" onclick="window.location.href ='TE1.html'"><img src="assets/icon_truck.svg" alt="botao menu">Transferir</button></li>
+                <li class="sidebar__buttons"><button type="button" class="navbar__btn-menu" onclick="window.location.href ='MAN1.html'"><img src="assets/icon_maintenance.png" alt="botao menu" style="width: 20px; height: 20px;">Manutenção</button></li>
+                <li class="sidebar__buttons"><button type="button" class="navbar__btn-menu" onclick="window.location.href ='#'"><img src="assets/icon_report.png" alt="botao menu" style="width: 20px; height: 20px;">Relatórios</button></li>
+            </ul>
+
+            <footer class="footer_sidebar">
+                <button type="button" class="navbar__btn-menu" onclick="window.location.href = 'index.html'"><img src="assets/logo_profile.svg" alt="botao menu"></button>
+            </footer>
+        </div>
+
+<main class="main-content panna-transfer-main"><!-- ETAPA 27: tela de gerenciamento inspirada no layout de referência enviado. -->
+<section class="pt-page" id="pt-detail-page"><div class="pt-heading"><div><small>OPERAÇÕES / TRANSFERÊNCIAS</small><h1 id="pt-detail-title">Transferência</h1><p id="pt-detail-subtitle"></p></div><div class="pt-heading-actions"><a class="pt-btn pt-outline" href="TE1.html">← Voltar</a><button class="pt-btn pt-danger" id="pt-cancel">Cancelar transferência</button><button class="pt-btn pt-primary" id="pt-advance">Iniciar movimento</button></div></div><div class="pt-status-strip"><span id="pt-detail-status" class="pt-pill"></span><strong id="pt-detail-forecast"></strong><span id="pt-detail-priority"></span></div><div class="pt-detail-grid" id="pt-detail-cards"></div><section class="pt-panel pt-history"><h2>Histórico da transferência</h2><div id="pt-timeline"></div></section></section>
+<!-- ETAPA 27: cada mudança de status solicita os dados específicos da etapa. -->
+<div class="pt-overlay" id="pt-step-overlay" hidden><section class="pt-modal" role="dialog" aria-modal="true" aria-labelledby="pt-step-title"><div class="pt-modal-head"><h2 id="pt-step-title">Atualizar transferência</h2><button class="pt-close" data-close aria-label="Fechar">×</button></div><form id="pt-step-form"><div class="pt-form-grid" id="pt-step-fields"></div><div class="pt-actions"><button class="pt-btn pt-outline" type="button" data-close>Voltar</button><button class="pt-btn pt-primary" type="submit">Confirmar alteração</button></div></form></section></div></main></div>
+<script src="equipamentos-iniciais.js"></script>
+<script src="panna-integracao.js"></script>
+<script src="panna-transferencias.js"></script>
+</body></html>

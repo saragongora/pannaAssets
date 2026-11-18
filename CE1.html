@@ -12,11 +12,13 @@
 </head>
 
 
-<body class="page page--home">
+<!-- ETAPA 25: classe exclusiva para responsividade do cadastro e da edição. -->
+<!-- ETAPA 26: menu inicia recolhido em qualquer tamanho de tela. -->
+<body class="page page--home panna-ce sidebar-collapsed">
     <header>
         <nav class="navbar">
             <ul class="navbar__list">
-                <li><button type="button" class="navbar__btn-menu" id="toggle-sidebar" aria-label="Mostrar ou ocultar menu lateral" aria-expanded="true"><img src="assets/btn_menu.svg" alt="botao menu"></button></li>
+                <li><button type="button" class="navbar__btn-menu" id="toggle-sidebar" aria-label="Mostrar ou ocultar menu lateral" aria-expanded="false"><img src="assets/btn_menu.svg" alt="botao menu"></button></li>
                 <li class="navbar__item"><img class="navbar__logo" id="navbar-logo" src="assets/logo_group.png"></li>
                 <li class="navbar__item" id="navbar-manage-equipment"> • Gestão interna</li>
             </ul>    
@@ -38,6 +40,8 @@
             </footer>
         </div>
 
+        <!-- ETAPA 25: camada clicável para fechar o menu lateral em dispositivos móveis. -->
+        <button class="panna-ge-backdrop" type="button" aria-label="Fechar menu lateral" hidden></button>
         <main class="main-content">
             <h1 class="title-h1">Cadastrar equipamento</h1>
             <h3 class="title-h3">Preencha os dados em uma única tela. Os campos de manutenção definem os alertas automáticos.</h3>
@@ -186,5 +190,7 @@
     <script src="panna.js"></script>
 <script src="equipamentos-iniciais.js"></script>
 <script src="panna-integracao.js"></script>
+<!-- ETAPA 25: comportamento do menu móvel compartilhado com Gerenciar Equipamentos. -->
+<script src="panna-ge-responsive.js"></script>
 </body>
 </html>

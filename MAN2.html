@@ -10,11 +10,12 @@
     <link rel="stylesheet" href="styles.css">
 </head>
 
-<body class="page page--home">
+<!-- ETAPA 26: menu inicia recolhido em qualquer tamanho de tela. -->
+<body class="page page--home sidebar-collapsed">
     <header>
        <nav class="navbar">
             <ul class="navbar__list">
-                <li><button type="button" class="navbar__btn-menu" id="toggle-sidebar" aria-label="Mostrar ou ocultar menu lateral" aria-expanded="true"><img src="assets/btn_menu.svg" alt="botao menu"></button></li>
+                <li><button type="button" class="navbar__btn-menu" id="toggle-sidebar" aria-label="Mostrar ou ocultar menu lateral" aria-expanded="false"><img src="assets/btn_menu.svg" alt="botao menu"></button></li>
                 <li class="navbar__item"><img class="navbar__logo" id="navbar-logo" src="assets/logo_group.png"></li>
                 <li class="navbar__item" id="navbar-manage-equipment"> • Gestão interna</li>
             </ul>    
@@ -45,5 +46,7 @@
     <script src="panna.js"></script>
 <script src="equipamentos-iniciais.js"></script>
 <script src="panna-integracao.js"></script>
+<!-- ETAPA 19: painel independente de manutenções pendentes -->
+<script src="panna-pendentes.js"></script>
 </body>
 </html>

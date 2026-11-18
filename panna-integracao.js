@@ -14,7 +14,7 @@ const HOME_OPERADOR='operacao-campo.html';
 /* Telas de campo: o administrador e o operador podem abri-las. */
 const compartilhadas=['operacao-campo.html','consulta-equipamento.html','abrir-chamado.html','registrar-avaria.html'];
 const operador=[];
-const adm=['HomeDesk.html','CE1.html','CE2.html','GE1.html','GE2.html','TE1.html','MAN1.html','MAN2.html','regras-alertas.html'];
+const adm=['HomeDesk.html','CE1.html','CE2.html','GE1.html','GE2.html','TE1.html','TE2.html','MAN1.html','MAN2.html','regras-alertas.html'];
 function protect(){if(page==='index.html')return true;let role=sessionStorage.getItem(S);if(!role){route('index.html');return false;}if((operador.includes(page)&&role!=='operador')||(adm.includes(page)&&role!=='adm')){route(role==='adm'?'HomeDesk.html':HOME_OPERADOR);return false;}return true;}
 function login(){let b=$('.login__enter');if(!b)return;b.removeAttribute('onclick');const go=()=>{let u=$('#username')?.value.trim().toLowerCase(),pass=$('#password')?.value;if(pass!=='123'||!['adm','operador'].includes(u)){alert('Usuário ou senha inválidos.');return;}sessionStorage.setItem(S,u);route(u==='adm'?'HomeDesk.html':HOME_OPERADOR);};b.addEventListener('click',go);['#username','#password'].forEach(s=>$(s)?.addEventListener('keydown',e=>{if(e.key==='Enter')go();}));$('.login__exit')?.addEventListener('click',()=>{sessionStorage.removeItem(S);$('#username').value='';$('#password').value='';});}
 function logout(){sessionStorage.removeItem(S);route('index.html');}
@@ -54,17 +54,20 @@ function responsiveMenu(){
 function home(){
  if(page!=='operacao-campo.html')return;
  const code=$('#equipment-code'),hint=$('#field-hint');attachCodes(code);
+ /* ETAPA 30: recupera o equipamento ao cancelar chamado ou avaria. */
+ const codigoAnterior=new URLSearchParams(location.search).get('codigo');
+ if(codigoAnterior)code.value=codigoAnterior;
  const say=t=>{hint.textContent=t;};
  const identified=()=>{if(!code.value.trim()){say('Leia o QR Code ou digite o código do equipamento.');code.focus();return null;}const e=findEquip(code.value);if(!e)say('Equipamento não encontrado. Confira o código.');return e||null;};
- const consult=()=>{const e=identified();if(e)route('consulta-equipamento.html?codigo='+encodeURIComponent(e.codigo));};
+ /* ETAPA 29: a identificação não abre mais a tela de consulta; só valida ao escolher uma ação. */
  const go=acao=>{const e=identified();if(e)route(campoRoutes[acao]+'?codigo='+encodeURIComponent(e.codigo));};
- $('#field-continue').onclick=consult;
- code.addEventListener('keydown',ev=>{if(ev.key==='Enter')consult();});
+ code.addEventListener('keydown',event=>{if(event.key==='Enter'){event.preventDefault();const e=identified();if(e)say('Equipamento identificado. Escolha uma das ações abaixo.');}});
  code.addEventListener('input',()=>say(''));
  $('#field-open-ticket').addEventListener('click',()=>go('chamado'));
  $('#field-report-fault').addEventListener('click',()=>go('avaria'));
  $('#field-logout').addEventListener('click',logout);
- qrScanner(code,say,consult);
+ /* ETAPA 29: ao ler QR Code, preencher o código sem navegar ou selecionar uma ação. */
+ qrScanner(code,say,()=>{const e=identified();if(e)say('Equipamento identificado. Escolha uma das ações abaixo.');});
 }
 /* Leitura de QR Code pela câmera (precisa de HTTPS ou localhost e de um navegador com BarcodeDetector, como o Chrome). */
 function qrScanner(code,say,onFound){
@@ -109,7 +112,8 @@ function form(){
  const code=new URLSearchParams(location.search).get('codigo'),item=read().find(x=>x.codigo===code);
  if(!item){alert('Selecione primeiro um equipamento.');route(HOME_OPERADOR);return;}
  $('#equipment-label-name').textContent=item.nome;$('#equipment-label-code').textContent=item.codigo;
- $('#field-cancel').onclick=()=>route('consulta-equipamento.html?codigo='+encodeURIComponent(code));
+ /* ETAPA 30: Cancelar retorna à tela existente de operação em campo, preservando o equipamento identificado. */
+ $('#field-cancel').onclick=()=>route(HOME_OPERADOR+'?codigo='+encodeURIComponent(code));
  const fill=(selector,options)=>{const el=$(selector);options.forEach(v=>el.add(new Option(v,v)));};
  if(page==='abrir-chamado.html'){
   fill('#ticket-type',['Corretiva','Preventiva','Inspeção','Elétrica','Mecânica','Outros']);
@@ -221,7 +225,7 @@ function maintenance(){
  function change(next){if(!selected)return;const {e,c}=selected;if(state(c.estado)===cls(next)){close();return;}update(e.codigo,item=>{const call=(item.chamados||[]).find(x=>x.id===c.id);if(!call)return;const previous=call.estado||'Aberto';call.estado=next;call.atualizadoEm=new Date().toISOString();call.responsavel='João da Silva';call.localAtendimento=item.localizacao||'Toyota Sorocaba';ev(item,'Chamado '+(next==='Aceito'?'aceito':'recusado'),call.id+' · Situação anterior: '+previous+' · '+call.descricao,'chamado');});close();maintenance();}
  $('#panna-accept').onclick=()=>change('Aceito');$('#panna-reject').onclick=()=>{if(confirm('Recusar este chamado?'))change('Recusado');};
  const labels={aberto:'Chamados em aberto',urgente:'Chamados urgentes',aceito:'Chamados aceitos',recusado:'Chamados recusados'};
- function render(){document.querySelectorAll('.panna-stat').forEach(b=>{const active=b.dataset.view===view;b.classList.toggle('is-active',active);b.setAttribute('aria-pressed',String(active));});$('#panna-list-title').textContent=labels[view];/* Valor vazio significa TODAS as prioridades: não aplicar cls(), que define Média como padrão. */const q=$('#panna-request-search').value.toLowerCase(),priorityValue=$('#panna-request-priority').value,filter=priorityValue?cls(priorityValue):'';const items=calls.filter(({e,c})=>{const status=state(c.estado);return (view==='todos'||(view==='urgente'?status==='aberto'&&cls(c.prioridade)==='urgente':status===view))&&(!filter||cls(c.prioridade)===filter)&&[e.nome,e.codigo,c.id,c.tipo,c.descricao].some(x=>String(x||'').toLowerCase().includes(q));});rows.replaceChildren();$('#panna-results').textContent=items.length+' registros encontrados';items.forEach(item=>{const {e,c}=item,tr=document.createElement('tr');tr.tabIndex=0;tr.innerHTML=`<td>${esc(c.id)}</td><td><strong>${esc(e.nome)}</strong><small>${esc(e.codigo)}</small></td><td>${esc(c.tipo||'Corretiva')}</td><td>${esc(date(c.criadoEm))}</td><td>${esc(c.localAtendimento||e.localizacao||'Toyota Sorocaba')}</td><td><span class="panna-priority ${cls(c.prioridade)}">● ${esc(c.prioridade||'Média')}</span></td><td><span class="panna-request-status">${esc(c.estado||'Aberto')}</span></td><td><button type="button" class="panna-row-action">Ver detalhes</button></td>`;tr.onclick=()=>open(item);tr.onkeydown=event=>{if(event.key==='Enter'){event.preventDefault();open(item);}};rows.append(tr);});if(!items.length){const tr=document.createElement('tr');tr.innerHTML='<td colspan="8" class="panna-no-requests">Nenhum chamado encontrado.</td>';rows.append(tr);}}
+ function render(){document.querySelectorAll('.panna-stat').forEach(b=>{const active=b.dataset.view===view;b.classList.toggle('is-active',active);b.setAttribute('aria-pressed',String(active));});$('#panna-list-title').textContent=labels[view];/* Valor vazio significa TODAS as prioridades: não aplicar cls(), que define Média como padrão. */const q=$('#panna-request-search').value.toLowerCase(),priorityValue=$('#panna-request-priority').value,filter=priorityValue?cls(priorityValue):'';const items=calls.filter(({e,c})=>{const status=state(c.estado);return (view==='todos'||(view==='urgente'?status==='aberto'&&cls(c.prioridade)==='urgente':status===view))&&(!filter||cls(c.prioridade)===filter)&&[e.nome,e.codigo,c.id,c.tipo,c.descricao].some(x=>String(x||'').toLowerCase().includes(q));});rows.replaceChildren();$('#panna-results').textContent=items.length+' registros encontrados';items.forEach(item=>{const {e,c}=item,tr=document.createElement('tr');tr.tabIndex=0;/* ETAPA 26: rótulos data-label permitem apresentar cada chamado como cartão no celular. */tr.innerHTML=`<td data-label="Código">${esc(c.id)}</td><td data-label="Equipamento"><strong>${esc(e.nome)}</strong><small>${esc(e.codigo)}</small></td><td data-label="Tipo">${esc(c.tipo||'Corretiva')}</td><td data-label="Data">${esc(date(c.criadoEm))}</td><td data-label="Local">${esc(c.localAtendimento||e.localizacao||'Toyota Sorocaba')}</td><td data-label="Prioridade"><span class="panna-priority ${cls(c.prioridade)}">● ${esc(c.prioridade||'Média')}</span></td><td data-label="Situação"><span class="panna-request-status">${esc(c.estado||'Aberto')}</span></td><td data-label="Ações"><button type="button" class="panna-row-action">Ver detalhes</button></td>`;tr.onclick=()=>open(item);tr.onkeydown=event=>{if(event.key==='Enter'){event.preventDefault();open(item);}};rows.append(tr);});if(!items.length){const tr=document.createElement('tr');tr.innerHTML='<td colspan="8" class="panna-no-requests">Nenhum chamado encontrado.</td>';rows.append(tr);}}
  document.querySelectorAll('.panna-stat').forEach(b=>b.onclick=()=>{view=b.dataset.view;render();});$('#panna-request-search').oninput=render;$('#panna-request-priority').onchange=render;render();
 }
 function openTab(){if(page!=='GE2.html'||location.hash!=='#manutencao')return;setTimeout(()=>document.querySelector('[data-panna-tab="manutencao"]')?.click(),30);}
