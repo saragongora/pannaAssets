@@ -8,14 +8,16 @@
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.9/dist/js/bootstrap.min.js" integrity="sha384-89aa4glufciPv46aKltztWQEmk+Tu9W2RhzXr6VcnUUEub7F8+06RcL2RYLCOHUq" crossorigin="anonymous"></script>
     <link rel="stylesheet" href="styles.css">
+<!-- ETAPA 33: interface compartilhada. -->
+<script src="panna-ui.js" defer></script>
 </head>
 
 <!-- ETAPA 26: menu inicia recolhido em qualquer tamanho de tela. -->
-<body class="page page--home sidebar-collapsed">
+<body class="page page--home">
     <header>
        <nav class="navbar">
             <ul class="navbar__list">
-                <li><button type="button" class="navbar__btn-menu" id="toggle-sidebar" aria-label="Mostrar ou ocultar menu lateral" aria-expanded="false"><img src="assets/btn_menu.svg" alt="botao menu"></button></li>
+                <li><button type="button" class="navbar__btn-menu" id="toggle-sidebar" aria-label="Mostrar ou ocultar menu lateral" aria-expanded="true"><img src="assets/btn_menu.svg" alt="botao menu"></button></li>
                 <li class="navbar__item"><img class="navbar__logo" id="navbar-logo" src="assets/logo_group.png"></li>
                 <li class="navbar__item" id="navbar-manage-equipment"> • Gestão interna</li>
             </ul>    
@@ -39,8 +41,11 @@
             </footer>
         </div>
 
-        <main class="main-content">
-
+        <main class="main-content" id="panna-dashboard">
+            <!-- ETAPA 33: indicadores dinâmicos e atalhos operacionais. -->
+            <header class="pd-header"><div><small>GESTÃO INTERNA / VISÃO GERAL</small><h1>Painel do técnico</h1><p>Acompanhe a disponibilidade dos equipamentos e as demandas de manutenção.</p></div><a href="CE1.html" class="pd-primary">+ Cadastrar equipamento</a></header>
+            <section class="pd-grid" aria-label="Indicadores operacionais"></section>
+            <div class="pd-panels"><section><h2>Demandas urgentes</h2><div id="pd-urgent" class="pd-rows"></div><a href="MAN2.html">Ver manutenções</a></section><section><h2>Agenda preventiva</h2><div id="pd-plans" class="pd-rows"></div><a href="MAN2.html">Ver agenda</a></section><section><h2>Equipamentos por unidade</h2><div id="pd-locations" class="pd-rows"></div><a href="GE1.html">Gerenciar equipamentos</a></section></div>
         </main>
     </div>
     <!-- JavaScript compartilhado: menu, armazenamento e cadastro. -->
@@ -48,5 +53,6 @@
     <script src="panna.js"></script>
 <script src="equipamentos-iniciais.js"></script>
 <script src="panna-integracao.js"></script>
+<script src="panna-dashboard.js"></script>
 </body>
 </html>

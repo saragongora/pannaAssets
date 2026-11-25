@@ -1,3 +1,4 @@
+/* ETAPA 33: mensagens padronizadas e confirmações assíncronas. */
 /* PANNA ASSETS — funcionalidades compartilhadas.
  * Os dados iniciais ficam em equipamentos-iniciais.js; alterações feitas no navegador
  * ficam no localStorage. Sem servidor, os dados NÃO são compartilhados entre computadores.
@@ -43,7 +44,7 @@
             botao.setAttribute('aria-expanded', String(!recolhido));
             botao.title = recolhido ? 'Mostrar menu lateral' : 'Ocultar menu lateral';
         };
-        atualizar(true); // ETAPA 26: não reutiliza o último estado salvo; inicia sempre recolhido.
+        atualizar(false); // ETAPA 26: não reutiliza o último estado salvo; inicia sempre recolhido.
         botao.addEventListener('click', () => {
             const recolhido = !document.body.classList.contains('sidebar-collapsed');
             atualizar(recolhido);
@@ -136,10 +137,10 @@
             label.append(span,controle);return label;
         }
         function validar(p,indice) {
-            if(!p.tipo||!p.periodicidade||!p.dataPrevista){alert('Preencha tipo, periodicidade e próxima data da preventiva '+(indice+1)+'.');return false;}
+            if(!p.tipo||!p.periodicidade||!p.dataPrevista){pannaAlert('Preencha tipo, periodicidade e próxima data da preventiva '+(indice+1)+'.');return false;}
             for(const insumo of p.insumos){
                 if(!String(insumo.nome||'').trim()||!(Number(insumo.quantidade)>0)||!String(insumo.unidade||'').trim()){
-                    alert('Preencha nome, quantidade e unidade de todos os insumos da preventiva '+(indice+1)+'.');return false;
+                    pannaAlert('Preencha nome, quantidade e unidade de todos os insumos da preventiva '+(indice+1)+'.');return false;
                 }
             }
             return true;
@@ -171,7 +172,7 @@
                 titulo.setAttribute('aria-expanded',String(aberto===p.id));titulo.onclick=()=>{aberto=aberto===p.id?null:p.id;render();};
                 const acoes=document.createElement('div');acoes.className='panna-plano-acoes';
                 const editar=botaoIcone('editar','Editar preventiva',()=>{p._salvo=false;aberto=p.id;render();});
-                const excluir=botaoIcone('excluir','Excluir preventiva',()=>{if(confirm('Excluir esta manutenção preventiva?')){planos.splice(i,1);if(aberto===p.id)aberto=null;render();}});
+                const excluir=botaoIcone('excluir','Excluir preventiva',async ()=>{if(await pannaConfirm('Excluir esta manutenção preventiva?')){planos.splice(i,1);if(aberto===p.id)aberto=null;render();}});
                 if(p._salvo)acoes.append(editar);acoes.append(excluir);cab.append(titulo,acoes);card.append(cab);
                 if(aberto===p.id){
                     const grid=document.createElement('div');grid.className='panna-plano-grid';
@@ -208,7 +209,7 @@
         return () => {
             for(let i=0;i<planos.length;i++){
                 if(!validar(planos[i],i))return null;
-                if(!planos[i]._salvo){alert('Clique em “Salvar preventiva” antes de salvar o equipamento.');return null;}
+                if(!planos[i]._salvo){pannaAlert('Clique em “Salvar preventiva” antes de salvar o equipamento.');return null;}
             }
             return planos.map(({_salvo,...p})=>structuredClone(p));
         };
@@ -224,7 +225,7 @@
         if (!botao) return;
         const codigoEdicao = new URLSearchParams(location.search).get('editar');
         const original = codigoEdicao ? listarEquipamentos().find(e => e.codigo === codigoEdicao) : null;
-        if (codigoEdicao && !original) { alert('Equipamento não encontrado para edição.'); location.href = 'GE1.html'; return; }
+        if (codigoEdicao && !original) { pannaAlert('Equipamento não encontrado para edição.').then(()=>location.href = 'GE1.html'); return; }
         const lerPlanos = iniciarEditorPreventivas(original);
         if (original) {
             Object.entries(CAMPOS).forEach(([chave, id]) => selecionarValor(id, original[chave]));
@@ -237,10 +238,10 @@
         botao.addEventListener('click', () => {
             const nome = campo('equipment-name');
             const patrimonio = campo('equipment-heritage');
-            if (!nome) { alert('Informe o nome do equipamento.'); $('#equipment-name').focus(); return; }
+            if (!nome) { pannaAlert('Informe o nome do equipamento.'); $('#equipment-name').focus(); return; }
             const lista = listarEquipamentos();
             if (patrimonio && lista.some(e => e.patrimonio === patrimonio && e.codigo !== codigoEdicao)) {
-                alert('Já existe um equipamento com este patrimônio.'); return;
+                pannaAlert('Já existe um equipamento com este patrimônio.'); return;
             }
             const planos = lerPlanos();
             if (planos === null) return;
@@ -267,7 +268,7 @@
                 lista.push(equipamento);
             }
             try { salvarEquipamentos(lista); }
-            catch (erro) { alert('Não foi possível salvar no navegador. Verifique o armazenamento disponível.'); return; }
+            catch (erro) { pannaAlert('Não foi possível salvar no navegador. Verifique o armazenamento disponível.'); return; }
             if (original) location.href = urlDetalhe(codigo);
             else {
                 sessionStorage.setItem('panna-ultimo-cadastro', codigo);
@@ -291,12 +292,14 @@
         const filtros = {'in-operation-sit':'Em funcionamento','under-maintenance':'Em manutenção','stopped-sit':'Parado','inactive-sit':'Inativo'};
         // ETAPA 25: alternância de situação com confirmação e registro no histórico.
         // Mantém a situação anterior para que a reativação não apague um status de manutenção.
-        function alternarSituacao(codigo) {
+        async function alternarSituacao(codigo) {
             const atual = lista.find(e => e.codigo === codigo);
-            if (!atual) { alert('Equipamento não encontrado.'); return; }
+            if (!atual) { pannaAlert('Equipamento não encontrado.'); return; }
             const inativo = atual.situacao === 'Inativo';
             const acao = inativo ? 'reativar' : 'inativar';
-            if (!confirm('Deseja ' + acao + ' o equipamento "' + (atual.nome || codigo) + '" (' + codigo + ')?')) return;
+            // ETAPA 33: exige motivo antes de inativar; cancelar não altera dados.
+            const motivo = inativo ? (await pannaConfirm('Reativar '+atual.nome+'?') ? '' : null) : await pannaReason(atual.nome || codigo);
+            if (motivo === null) return;
             const anterior = atual.situacao || 'Em funcionamento';
             if (inativo) {
                 atual.situacao = atual.situacaoAntesInativacao || 'Em funcionamento';
@@ -304,23 +307,24 @@
             } else {
                 atual.situacaoAntesInativacao = anterior;
                 atual.situacao = 'Inativo';
+                atual.motivoInativacao = motivo; // ETAPA 33: motivo persistido.
             }
             registrarEvento(atual, 'status', inativo ? 'Equipamento reativado' : 'Equipamento inativado',
-                'Situação alterada de ' + anterior + ' para ' + atual.situacao + '.');
+                'Situação alterada de ' + anterior + ' para ' + atual.situacao + '.' + (motivo ? ' Motivo: '+motivo : ''));
             atual.atualizadoEm = new Date().toISOString();
             try { salvarEquipamentos(lista); }
-            catch (erro) { alert('Não foi possível alterar a situação do equipamento.'); lista = listarEquipamentos(); return; }
+            catch (erro) { pannaAlert('Não foi possível alterar a situação do equipamento.'); lista = listarEquipamentos(); return; }
             // ETAPA 25: refaz tabela, contadores e filtro sem recarregar a página.
             renderizar();
         }
         // ETAPA 25: exclusão definitiva com confirmação explícita, como na tela GE2.
-        function confirmarExclusao(codigo) {
+        async function confirmarExclusao(codigo) {
             const atual = lista.find(e => e.codigo === codigo);
-            if (!atual) { alert('Equipamento não encontrado.'); return; }
-            if (!confirm('Excluir definitivamente "' + (atual.nome || codigo) + '" (' + codigo + ')?\nEsta ação não pode ser desfeita e remove também o histórico e as manutenções vinculadas.')) return;
+            if (!atual) { pannaAlert('Equipamento não encontrado.'); return; }
+            if (!await pannaConfirm('Excluir definitivamente "' + (atual.nome || codigo) + '" (' + codigo + ')?\nEsta ação não pode ser desfeita e remove também o histórico e as manutenções vinculadas.')) return;
             const restante = lista.filter(e => e.codigo !== codigo);
             try { salvarEquipamentos(restante); }
-            catch (erro) { alert('Não foi possível excluir o equipamento.'); return; }
+            catch (erro) { pannaAlert('Não foi possível excluir o equipamento.'); return; }
             lista = restante;
             renderizar();
         }
@@ -553,14 +557,14 @@
         function gravar(planos, evento = null) {
             const lista=listarEquipamentos();
             const indice=lista.findIndex(e=>e.codigo===item.codigo);
-            if(indice<0) {alert('Equipamento não encontrado.');return false;}
+            if(indice<0) {pannaAlert('Equipamento não encontrado.');return false;}
             lista[indice].planosPreventivos=planos;
             // Compatibilidade com a listagem GE1 e com registros anteriores.
             const datas=planos.map(p=>normalizarDataISO(p.dataPrevista)).filter(Boolean).sort();
             lista[indice].proximaPreventiva=datas[0]||'';
             lista[indice].atualizadoEm=new Date().toISOString();
             if (evento) registrarEvento(lista[indice], 'preventiva', evento.titulo, evento.descricao);
-            try {salvarEquipamentos(lista);} catch(e) {alert('Não foi possível salvar as preventivas.');return false;}
+            try {salvarEquipamentos(lista);} catch(e) {pannaAlert('Não foi possível salvar as preventivas.');return false;}
             return true;
         }
         function abrir(plano) {
@@ -599,8 +603,8 @@
             rodape.append(botao('Cancelar','panna-outline-btn',fechar));
             rodape.append(botao('Salvar preventiva','panna-yellow-btn',()=>{
                 r.tipo=tipo.value;r.periodicidade=periodicidade.value;r.dataPrevista=data.value;r.avisoAntecipado=aviso.value;
-                if(!r.tipo||!r.periodicidade||!r.dataPrevista){alert('Preencha tipo, periodicidade e próxima data prevista.');return;}
-                if(r.insumos.some(x=>!String(x.nome||'').trim()||!(Number(x.quantidade)>0)||!x.unidade)){alert('Preencha nome, quantidade e unidade de todos os insumos.');return;}
+                if(!r.tipo||!r.periodicidade||!r.dataPrevista){pannaAlert('Preencha tipo, periodicidade e próxima data prevista.');return;}
+                if(r.insumos.some(x=>!String(x.nome||'').trim()||!(Number(x.quantidade)>0)||!x.unidade)){pannaAlert('Preencha nome, quantidade e unidade de todos os insumos.');return;}
                 const atual=registroAtual();if(!atual)return;
                 const planos=structuredClone(planosDoEquipamento(atual));
                 const indice=planos.findIndex(p=>p.id===r.id);
@@ -637,12 +641,12 @@
             });}
             desenhar();
             editor.append(botao('+ Insumo utilizado','panna-outline-btn',()=>{insumos.push({nome:'',quantidade:1,unidade:'un'});desenhar();}));
-            editor.append(botao('Confirmar realização','panna-yellow-btn panna-salvar-plano',()=>{
-                if(!data.value||data.value>new Date().toLocaleDateString('en-CA')){alert('Informe uma data de realização válida, até hoje.');return;}
-                if(!responsavel.value.trim()){alert('Informe o responsável pela realização.');return;}
-                if(insumos.some(x=>!String(x.nome||'').trim()||!(Number(x.quantidade)>0)||!x.unidade)){alert('Confira os insumos utilizados.');return;}
+            editor.append(botao('Confirmar realização','panna-yellow-btn panna-salvar-plano',async ()=>{
+                if(!data.value||data.value>new Date().toLocaleDateString('en-CA')){pannaAlert('Informe uma data de realização válida, até hoje.');return;}
+                if(!responsavel.value.trim()){pannaAlert('Informe o responsável pela realização.');return;}
+                if(insumos.some(x=>!String(x.nome||'').trim()||!(Number(x.quantidade)>0)||!x.unidade)){pannaAlert('Confira os insumos utilizados.');return;}
                 const equipamentos=listarEquipamentos();const indice=equipamentos.findIndex(e=>e.codigo===item.codigo);
-                if(indice<0){alert('Equipamento não encontrado.');return;}
+                if(indice<0){pannaAlert('Equipamento não encontrado.');return;}
                 const e=equipamentos[indice];
                 const registro={id:'exec-'+Date.now().toString(36)+'-'+Math.random().toString(36).slice(2,8),
                     planoId:plano.id||null,tipo:plano.tipo||'Preventiva',dataExecucao:data.value,
@@ -653,12 +657,12 @@
                 const planoAtual = (Array.isArray(e.planosPreventivos) ? e.planosPreventivos : [])
                     .find(p => p.id === plano.id);
                 if (!planoAtual) {
-                    alert('Esta preventiva não existe mais. Atualize a página antes de registrar.');
+                    pannaAlert('Esta preventiva não existe mais. Atualize a página antes de registrar.');
                     return;
                 }
                 const dataAnterior = planoAtual.dataPrevista || '';
                 const proximaData = pannaProximaDataPreventiva(registro.dataExecucao, planoAtual.periodicidade);
-                if (!proximaData && !confirm('Periodicidade não reconhecida. Registrar a realização sem reagendar automaticamente?')) return;
+                if (!proximaData && !await pannaConfirm('Periodicidade não reconhecida. Registrar a realização sem reagendar automaticamente?')) return;
                 // A realização é preservada independentemente de um futuro ajuste no plano.
                 registro.dataPrevistaAnterior = dataAnterior;
                 registro.proximaDataPrevista = proximaData || null;
@@ -679,10 +683,10 @@
                         ' · Periodicidade: ' + planoAtual.periodicidade);
                 }
                 e.atualizadoEm=new Date().toISOString();
-                try{salvarEquipamentos(equipamentos);}catch(erro){alert('Não foi possível registrar a realização.');return;}
+                try{salvarEquipamentos(equipamentos);}catch(erro){pannaAlert('Não foi possível registrar a realização.');return;}
                 fechar();
                 // Recarrega a tela para sincronizar a lista, o card lateral e a linha do tempo.
-                alert(proximaData
+                pannaAlert(proximaData
                     ? 'Realização registrada! Próxima preventiva: ' + dataBR(proximaData) + '.'
                     : 'Realização registrada no histórico. Reagendamento manual necessário.');
                 location.reload();
@@ -725,8 +729,8 @@
                 const editar=botao('','panna-icone-acao panna-icone-editar',()=>abrir(p));
                 editar.innerHTML='<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L9 17l-4 1 1-4Z"/></svg>';
                 editar.title='Editar preventiva';editar.setAttribute('aria-label','Editar '+(p.tipo||'preventiva'));
-                const excluir=botao('','panna-icone-acao panna-icone-excluir',()=>{
-                    if(!confirm('Excluir a preventiva "'+(p.tipo||'')+'"?'))return;
+                const excluir=botao('','panna-icone-acao panna-icone-excluir',async ()=>{
+                    if(!await pannaConfirm('Excluir a preventiva "'+(p.tipo||'')+'"?'))return;
                     const dados=registroAtual();if(!dados)return;
                     const restante=planosDoEquipamento(dados).filter((x,j)=>x.id!==p.id || (p.id==null && j!==i));
                     if(gravar(restante, {titulo:'Preventiva excluída',descricao:p.tipo||'Preventiva'})){fechar();atualizarDetalhes();}
@@ -777,24 +781,28 @@
             alternar.setAttribute('aria-label', (inativo ? 'Reativar' : 'Inativar') + ' ' + (item.nome || 'equipamento'));
         };
         atualizarBotaoSituacao();
-        alternar.addEventListener('click', () => {
+        alternar.addEventListener('click', async () => {
             const lista = listarEquipamentos();
             const indice = lista.findIndex(e => e.codigo === item.codigo);
-            if (indice < 0) { alert('Este equipamento não existe mais.'); location.href = 'GE1.html'; return; }
+            if (indice < 0) { pannaAlert('Este equipamento não existe mais.').then(()=>location.href = 'GE1.html'); return; }
             const atual = lista[indice];
             const inativo = atual.situacao === 'Inativo';
+            // ETAPA 33: mesma confirmação da listagem.
+            const motivo = inativo ? (await pannaConfirm('Reativar '+atual.nome+'?') ? '' : null) : await pannaReason(atual.nome || atual.codigo);
+            if (motivo === null) return;
             if (inativo) {
                 atual.situacao = atual.situacaoAntesInativacao || 'Em funcionamento';
                 delete atual.situacaoAntesInativacao;
             } else {
                 atual.situacaoAntesInativacao = atual.situacao || 'Em funcionamento';
                 atual.situacao = 'Inativo';
+                atual.motivoInativacao = motivo; // ETAPA 33: motivo persistido.
             }
             registrarEvento(atual, 'status', inativo ? 'Equipamento reativado' : 'Equipamento inativado',
-                'Situação alterada de '+(inativo?'Inativo':atual.situacaoAntesInativacao)+' para '+atual.situacao+'.');
+                'Situação alterada de '+(inativo?'Inativo':atual.situacaoAntesInativacao)+' para '+atual.situacao+'.'+(motivo?' Motivo: '+motivo:''));
             atual.atualizadoEm = new Date().toISOString();
             try { salvarEquipamentos(lista); }
-            catch (erro) { alert('Não foi possível alterar a situação.'); return; }
+            catch (erro) { pannaAlert('Não foi possível alterar a situação.'); return; }
             // Recarrega os dados e o indicador da preventiva, preservando a URL.
             location.reload();
         });
@@ -809,9 +817,9 @@
         $('#panna-confirmar-excluir').addEventListener('click', () => {
             const lista = listarEquipamentos();
             const restante = lista.filter(e => e.codigo !== item.codigo);
-            if (restante.length === lista.length) { dialogo.close(); alert('Equipamento já excluído.'); location.href = 'GE1.html'; return; }
+            if (restante.length === lista.length) { dialogo.close(); pannaAlert('Equipamento já excluído.').then(()=>location.href = 'GE1.html'); return; }
             try { salvarEquipamentos(restante); }
-            catch (erro) { alert('Não foi possível excluir o equipamento.'); return; }
+            catch (erro) { pannaAlert('Não foi possível excluir o equipamento.'); return; }
             // Retorna à listagem, que recalcula contadores e filtros.
             location.href = 'GE1.html';
         });
@@ -884,6 +892,6 @@
         renderizarHistoricoManutencoes(item.codigo);
     }
     document.addEventListener('DOMContentLoaded', () => {
-        iniciarMenu(); iniciarOpcoesCadastro(); iniciarCadastro(); iniciarGerenciamento(); iniciarConfirmacao(); iniciarDetalhes();
+        /* ETAPA 33: menu controlado por panna-ui.js. */ iniciarOpcoesCadastro(); iniciarCadastro(); iniciarGerenciamento(); iniciarConfirmacao(); iniciarDetalhes();
     });
 })();
